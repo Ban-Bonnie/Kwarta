@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../static/fontawesome/css/all.css" />
+    <link rel="stylesheet" href="../static/dashboardstyle.css" />
+    <link rel="stylesheet" href="../static/TopUp.css" />
+    <title>Transaction History</title>
+</head>
+
+<body >
+    <!-- Dashboard -->
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-transparent py-4 px-4 shadow-sm">
+        <div class="d-flex align-items-center">
+            <!-- Back Button Icon with increased size and spacing -->
+            <i class="fas fa-peso-sign me-2"></i>Kwarta
+        </div>
+        </div>
+        <div class="ml-auto ms-auto d-flex align-items-center text-end nav-icon">
+            <i class="fas fa-bell primary-text navbar-icon me-3" id="notification-icon" title="Notifications"
+                style="font-size: 1.5rem; cursor: pointer;"></i>
+            <i class="fas fa-user-circle primary-text navbar-icon" id="profile-icon" title="Profile"
+                style="font-size: 1.5rem; cursor: pointer;"></i>
+        </div>
+    </nav>
+
+    <!--Minecraft Modal-->
+    <div class="modal fade" id="minecraftForm" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    <div class="myform bg-dark">
+                        <h1 class="text-center">Minecraft</h1>
+                        <form method="post" action="/gameTopup_process">
+                            <input type="hidden" name="game" value="minecraft">
+                            <div class="mb-3">
+                                <label  for="minecraftEmail" class="form-label">Enter Email Address</label>
+                                <input name="email" type="email" class="form-control" id="minecraftEmail"
+                                    aria-describedby="emailHelp" placeholder="Email Address" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Select Minecoins Package</label>
+                                <div class="minecoins-option form-check">
+                                    <input class="form-check-input" type="radio" name="package" id="option1"
+                                        value="560|1720" required>
+                                    <span class="minecoins-icon">💰</span> <!-- Example icon for Minecoins -->
+                                    <label class="form-check-label" for="option1">
+                                        1720 Minecoins for 560 PHP
+                                    </label>
+                                </div>
+                                <div class="minecoins-option form-check">
+                                    <input class="form-check-input" type="radio" name="package" id="option2"
+                                        value="1120|3500" required>
+                                    <span class="minecoins-icon">💰</span> <!-- Example icon for Minecoins -->
+                                    <label class="form-check-label" for="option2">
+                                        3500 Minecoins for 1120 PHP
+                                    </label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-light mt-3">CHECKOUT</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Genshin Modal-->
+    <div class="modal fade" id="genshinForm" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    <div class="myform bg-dark">
+                        <h1 class="text-center">Genshin Impact</h1>
+                        <form method="post" action="/gameTopup_process">
+                            <input type="hidden" name="game" value="genshin">
+                            <div class="mb-3">
+                                <label for="genshinUID" class="form-label">Enter UID</label>
+                                <input name="uid" type="text" class="form-control" id="genshinUID" placeholder="Enter UID" required
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            </div>
+                            <div class="mb-3">
+                                <label for="genshinServer" class="form-label">Select Server</label>
+                                <select name ="server" class="form-select" id="genshinServer" required>
+                                    <option value="" disabled selected>Select your server</option>
+                                    <option value="Asia">Asia</option>
+                                    <option value="America">America</option>
+                                    <option value="Europe">Europe</option>
+                                    <option value="Europe">TW, HK, MO</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Select Genesis Crystals Package</label>
+                                <div class="minecoins-option form-check">
+                                    <input class="form-check-input" type="radio" name="genshinOptions" id="option1"
+                                        value="55|60" required>
+                                    <span class="minecoins-icon">💎</span>
+                                    <label class="form-check-label" for="option1">
+                                        60 Genesis Crystals for 55 PHP
+                                    </label>
+                                </div>
+                                <div class="minecoins-option form-check">
+                                    <input class="form-check-input" type="radio" name="genshinOptions" id="option2"
+                                        value="280|330" required>
+                                    <span class="minecoins-icon">💎</span>
+                                    <label class="form-check-label" for="option2">
+                                        330 Genesis Crystals for 280 PHP
+                                    </label>
+                                </div>
+                                <div class="minecoins-option form-check">
+                                    <input class="form-check-input" type="radio" name="genshinOptions" id="option3"
+                                        value="830|1090" required>
+                                    <span class="minecoins-icon">💎</span>
+                                    <label class="form-check-label" for="option3">
+                                        1090 Genesis Crystals for 830 PHP
+                                    </label>
+                                </div>
+                                <div class="minecoins-option form-check">
+                                    <input class="form-check-input" type="radio" name="genshinOptions" id="option4"
+                                        value="1670|2240" required>
+                                    <span class="minecoins-icon">💎</span>
+                                    <label class="form-check-label" for="option4">
+                                        2240 Genesis Crystals for 1670 PHP
+                                    </label>
+                                </div>
+                                <div class="minecoins-option form-check">
+                                    <input class="form-check-input" type="radio" name="genshinOptions" id="option5"
+                                        value="2800|3880" required>
+                                    <span class="minecoins-icon">💎</span>
+                                    <label class="form-check-label" for="option5">
+                                        3880 Genesis Crystals for 2800 PHP
+                                    </label>
+                                </div>
+                                <div class="minecoins-option form-check">
+                                    <input class="form-check-input" type="radio" name="genshinOptions" id="option6"
+                                        value="5500|8080" required>
+                                    <span class="minecoins-icon">💎</span>
+                                    <label class="form-check-label" for="option6">
+                                        8080 Genesis Crystals for 5500 PHP
+                                    </label>
+                                </div>
+                                <div class="minecoins-option form-check">
+                                    <input class="form-check-input" type="radio" name="genshinOptions" id="option7"
+                                        value="280|Blessing of the Welkin Moon" required>
+                                    <label class="form-check-label" for="option7">
+                                        Blessing of the Welkin Moon for 280 PHP
+                                    </label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-light mt-3">BUY NOW</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--lol modal-->
+    <div class="modal fade" id="lolForm" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    <div class="myform bg-dark">
+                        <h1 class="text-center">League of Legends</h1>
+                        <form method="post", action ="/gameTopup_process">
+                            <input type="hidden" name="game" value="league of legends">
+                            <div class="mb-3">
+                                <label for="lolUID" class="form-label">Enter Riot ID</label>
+                                <input name="riotId"type="text" class="form-control" id="lolUID" placeholder="Riot ID" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Select RP Package</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="lolOptions" id="option1"
+                                        value="199|575" required>
+                                    <label class="form-check-label" for="option1">
+                                        575 RP for ₱199
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="lolOptions" id="option2"
+                                        value="449|1380" required>
+                                    <label class="form-check-label" for="option2">
+                                        1380 RP for ₱449
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="lolOptions" id="option3"
+                                        value="899|2800" required>
+                                    <label class="form-check-label" for="option3">
+                                        2800 RP for ₱899
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="lolOptions" id="option4"
+                                        value="1399|4500" required>
+                                    <label class="form-check-label" for="option4">
+                                        4500 RP for ₱1,399
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="lolOptions" id="option5"
+                                        value="1999|6500" required>
+                                    <label class="form-check-label" for="option5">
+                                        6500 RP for ₱1,999
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="lolOptions" id="option6"
+                                        value="3999|13500" required>
+                                    <label class="form-check-label" for="option6">
+                                        13500 RP for ₱3,999
+                                    </label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">BUY NOW</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call of Duty Mobile Modal -->
+    <div class="modal fade" id="codmForm" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    <div class="myform bg-dark">
+                        <h1 class="text-center">Call of Duty Mobile</h1>
+                        <form method="post", action ="/gameTopup_process">
+                            <input type="hidden" name ="game" value="CODM">
+                            <div class="mb-3">
+                                <label for="codmUID" class="form-label">Enter Player ID</label>
+                                <input name="playerId"type="text" class="form-control" id="codmUID" placeholder="Player ID" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Select Garena Shells Package</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="codmOptions" id="option1"
+                                        value="10" required>
+                                    <label class="form-check-label" for="option1">
+                                        10 Garena Shells for ₱10
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="codmOptions" id="option2"
+                                        value="20" required>
+                                    <label class="form-check-label" for="option2">
+                                        20 Garena Shells for ₱20
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="codmOptions" id="option3"
+                                        value="50" required>
+                                    <label class="form-check-label" for="option3">
+                                        50 Garena Shells for ₱50
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="codmOptions" id="option4"
+                                        value="100" required>
+                                    <label class="form-check-label" for="option4">
+                                        100 Garena Shells for ₱100
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="codmOptions" id="option5"
+                                        value="200" required>
+                                    <label class="form-check-label" for="option5">
+                                        200 Garena Shells for ₱200
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="codmOptions" id="option6"
+                                        value="300" required>
+                                    <label class="form-check-label" for="option6">
+                                        300 Garena Shells for ₱300
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="codmOptions" id="option7"
+                                        value="500" required>
+                                    <label class="form-check-label" for="option7">
+                                        500 Garena Shells for ₱500
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="codmOptions" id="option8"
+                                        value="1000" required>
+                                    <label class="form-check-label" for="option8">
+                                        1000 Garena Shells for ₱1000
+                                    </label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">BUY NOW</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VALORANT Modal -->
+    <div class="modal fade" id="valorantForm" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    <div class="myform bg-dark">
+                        <h1 class="text-center">VALORANT</h1>
+                        <form method="post", action ="/gameTopup_process">
+                            <input type="hidden" name="game" value="valorant">
+                            <div class="mb-3">
+                                <label for="valorantUID" class="form-label">Enter Riot ID</label>
+                                <input name="riotId" type="text" class="form-control" id="valorantUID"
+                                    placeholder="Riot ID (e.g., User#1234)" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Select VP (Valorant Points) Package</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="valorantOptions" id="vpOption1"
+                                        value="55|300" required>
+                                    <label class="form-check-label" for="vpOption1">
+                                        300 VP for ₱55
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="valorantOptions" id="vpOption2"
+                                        value="125|675" required>
+                                    <label class="form-check-label" for="vpOption2">
+                                        625 VP for ₱125
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="valorantOptions" id="vpOption3"
+                                        value="245|1250" required>
+                                    <label class="form-check-label" for="vpOption3">
+                                        1250 VP for ₱245
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="valorantOptions" id="vpOption4"
+                                        value="499|2500" required>
+                                    <label class="form-check-label" for="vpOption4">
+                                        2500 VP for ₱499
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="valorantOptions" id="vpOption5"
+                                        value="999|5000" required>
+                                    <label class="form-check-label" for="vpOption5">
+                                        5000 VP for ₱999
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="valorantOptions" id="vpOption6"
+                                        value="1999|10500" required>
+                                    <label class="form-check-label" for="vpOption6">
+                                        10500 VP for ₱1,999
+                                    </label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">BUY NOW</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div style="background-color:ghostwhite;" class="container-fluid px-4 row px-2 justify-content-center">
+        <div class="d-flex">
+            <div class="container py-5 ">
+                <a href="{{url_for('dashboard')}}"><i class="fas fa-solid fa-arrow-left-long primary-text" id="back" style="font-size: 1.5rem; margin-right: 15px; cursor: pointer;"></i></a>
+                <h1 class="text-center mb-5">Top-Up</h1>
+                <div class="cards row row-cols-2 row-cols-md-4 row-cols-lg-5 g-4">
+                    <!-- Card 1 -->
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#minecraftForm">
+                        <div class="col">
+                            <div class="card h-100">
+                                <img src="{{ url_for('static', filename='img/Minecraft.jpeg') }}" class="card-img-top" alt="Minecraft">
+                                <div class="card-body">
+                                    <h5 class="card-title">Minecraft</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Card 2 -->
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#genshinForm">
+                        <div class="col">
+                            <div class="card h-100">
+                                <img src="{{ url_for('static', filename='img/Genshino.jpg') }}" class="card-img-top" alt="Genshin Impact">
+                                <div class="card-body">
+                                    <h5 class="card-title">Genshin Impact</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Card 3 -->
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#lolForm">
+                        <div class="col">
+                            <div class="card h-100">
+                                <img src="{{ url_for('static', filename='img/lol.jpg') }}" class="card-img-top" alt="League of Legends">
+                                <div class="card-body">
+                                    <h5 class="card-title">League of Legends</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Card 4 -->
+                    <a href="" data-bs-toggle="modal" data-bs-target="#codmForm">
+                        <div class="col">
+                            <div class="card h-100">
+                                <img src="{{ url_for('static', filename='img/codm.jpg') }}" class="card-img-top" alt="Call of Duty: Mobile">
+                                <div class="card-body">
+                                    <h5 class="card-title">Call of Duty: Mobile</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Card 5 -->
+                    <a href="" data-bs-toggle="modal" data-bs-target="#valorantForm">
+                        <div class="col">
+                            <div class="card h-100">
+                                <img src="{{ url_for('static', filename='img/valorant.jpg') }}" class="card-img-top" alt="VALORANT">
+                                <div class="card-body">
+                                    <h5 class="card-title">VALORANT</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

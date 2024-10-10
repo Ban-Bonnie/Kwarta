@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../static/fontawesome/css/all.css" />
+    <link rel="stylesheet" href="../static/dashboardstyle.css" />
+    <link rel="stylesheet" href="../static/Bills.css" />
+    <title>Transaction History</title>
+</head>
+
+<body>
+    <!-- Dashboard -->
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-transparent py-4 px-4 shadow-sm">
+        <div class="d-flex align-items-center">
+            <!-- Back Button Icon with increased size and spacing -->
+            <i class="fas fa-peso-sign me-2"></i>Kwarta
+        </div>
+        </div>
+        <div class="ml-auto ms-auto d-flex align-items-center text-end nav-icon">
+            <i class="fas fa-bell primary-text navbar-icon me-3" id="notification-icon" title="Notifications"
+                style="font-size: 1.5rem; cursor: pointer;"></i>
+            <i class="fas fa-user-circle primary-text navbar-icon" id="profile-icon" title="Profile"
+                style="font-size: 1.5rem; cursor: pointer;"></i>
+        </div>
+    </nav>
+
+    <!--Electricity Modal-->
+    <div class="modal fade" id="electricBillForm" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    <div class="myform bg-dark">
+                        <h1 class="text-center">Electric Bill Payment</h1>
+                        <form>
+                            <div class="mb-3">
+                                <label for="accountNumber" class="form-label">Enter Account Number</label>
+                                <input type="text" class="form-control" id="accountNumber"
+                                    placeholder="Your Account Number" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="billingAmount" class="form-label">Enter Billing Amount</label>
+                                <input type="number" class="form-control" id="billingAmount"
+                                    placeholder="Enter Amount (₱)" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">PAY NOW</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Healthcare Modal-->
+    <div class="modal fade" id="healthcareBillForm" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    <div class="myform bg-dark">
+                        <h1 class="text-center">Healthcare Bill Payment</h1>
+                        <form>
+                            <div class="mb-3">
+                                <label for="patientID" class="form-label">Enter Patient ID</label>
+                                <input type="text" class="form-control" id="patientID" placeholder="Your Patient ID"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="healthcareProvider" class="form-label">Healthcare Provider</label>
+                                <input type="text" class="form-control" id="healthcareProvider"
+                                    placeholder="Hospital/Clinic Name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="billingAmount" class="form-label">Enter Billing Amount</label>
+                                <input type="number" class="form-control" id="billingAmount"
+                                    placeholder="Enter Amount (₱)" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">PAY NOW</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Transportation Modal-->
+    <div class="modal fade" id="transportationPaymentForm" tabindex="-1" aria-labelledby="ModalFormLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    <div class="myform bg-dark">
+                        <h1 class="text-center">Transportation Payment</h1>
+                        <form>
+                            <div class="mb-3">
+                                <label for="passengerName" class="form-label">Enter Passenger Name</label>
+                                <input type="text" class="form-control" id="passengerName" placeholder="Full Name"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tripDate" class="form-label">Select Trip Date</label>
+                                <input type="date" class="form-control" id="tripDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="destination" class="form-label">Enter Destination</label>
+                                <input type="text" class="form-control" id="destination"
+                                    placeholder="Destination (e.g., City, Station)" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="billingAmount" class="form-label">Enter Total Amount</label>
+                                <input type="number" class="form-control" id="billingAmount"
+                                    placeholder="Enter Amount (₱)" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">PAY NOW</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Telecom Modal-->
+    <div class="modal fade" id="telecomPaymentForm" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    <div class="myform bg-dark">
+                        <h1 class="text-center">Telecom Bill Payment</h1>
+                        <form>
+                            <div class="mb-3">
+                                <label for="accountNumber" class="form-label">Account Number</label>
+                                <input type="text" class="form-control" id="mobileNumber" placeholder="Account Number"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="serviceProvider" class="form-label">Select Service Provider</label>
+                                <select class="form-select" id="serviceProvider" required>
+                                    <option value="" disabled selected>Select your provider</option>
+                                    <option value="provider1">Globe</option>
+                                    <option value="provider2">Smart</option>
+                                    <option value="provider3">DITO</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="billingAmount" class="form-label">Enter Billing Amount</label>
+                                <input type="number" class="form-control" id="billingAmount"
+                                    placeholder="Enter Amount (₱)" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">PAY NOW</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--CreditCard Modal-->
+    <div class="modal fade" id="creditCardPaymentForm" tabindex="-1" aria-labelledby="ModalFormLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    <div class="myform bg-dark">
+                        <h1 class="text-center">Credit Card Payment</h1>
+                        <form>
+                            <div class="mb-3">
+                                <label for="cardHolderName" class="form-label">Cardholder Name</label>
+                                <input type="text" class="form-control" id="cardHolderName"
+                                    placeholder="Full Name on Card" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="cardNumber" class="form-label">Card Number</label>
+                                <input type="text" class="form-control" id="cardNumber"
+                                    placeholder="1234 5678 9012 3456" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="expiryDate" class="form-label">Expiry Date</label>
+                                <input type="month" class="form-control" id="expiryDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="cvv" class="form-label">CVV</label>
+                                <input type="text" class="form-control" id="cvv" placeholder="123" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="billingAmount" class="form-label">Enter Amount</label>
+                                <input type="number" class="form-control" id="billingAmount"
+                                    placeholder="Enter Amount (₱)" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">PAY NOW</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Water Modal-->
+    <div class="modal fade" id="waterUtilityPaymentForm" tabindex="-1" aria-labelledby="ModalFormLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    <div class="myform bg-dark">
+                        <h1 class="text-center">Water Utility Bill Payment</h1>
+                        <form>
+                            <div class="mb-3">
+                                <label for="accountNumber" class="form-label">Enter Account Number</label>
+                                <input type="text" class="form-control" id="accountNumber"
+                                    placeholder="Your Account Number" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="customerName" class="form-label">Enter Customer Name</label>
+                                <input type="text" class="form-control" id="customerName" placeholder="Full Name"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="billingAmount" class="form-label">Enter Billing Amount</label>
+                                <input type="number" class="form-control" id="billingAmount"
+                                    placeholder="Enter Amount (₱)" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">PAY NOW</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Internet Modal-->
+    <div class="modal fade" id="internetPaymentForm" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    <div class="myform bg-dark">
+                        <h1 class="text-center">Internet Service Payment</h1>
+                        <form>
+                            <div class="mb-3">
+                                <label for="accountNumber" class="form-label">Enter Account Number</label>
+                                <input type="text" class="form-control" id="accountNumber"
+                                    placeholder="Your Account Number" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="customerName" class="form-label">Enter Customer Name</label>
+                                <input type="text" class="form-control" id="customerName" placeholder="Full Name"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="billingAmount" class="form-label">Enter Billing Amount</label>
+                                <input type="number" class="form-control" id="billingAmount"
+                                    placeholder="Enter Amount (₱)" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="serviceProvider" class="form-label">Select Service Provider</label>
+                                <select class="form-select" id="serviceProvider" required>
+                                    <option value="" disabled selected>Select your provider</option>
+                                    <option value="provider1">PLDT</option>
+                                    <option value="provider2">Converge</option>
+                                    <option value="provider3">Globe Telecom</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">PAY NOW</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Loans Modal-->
+    <div class="modal fade" id="loanPaymentForm" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    <div class="myform bg-dark">
+                        <h1 class="text-center">Loan Payment</h1>
+                        <form>
+                            <div class="mb-3">
+                                <label for="loanAccountNumber" class="form-label">Enter Loan Account Number</label>
+                                <input type="text" class="form-control" id="loanAccountNumber"
+                                    placeholder="Your Loan Account Number" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="borrowerName" class="form-label">Enter Borrower Name</label>
+                                <input type="text" class="form-control" id="borrowerName" placeholder="Full Name"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="billingAmount" class="form-label">Enter Payment Amount</label>
+                                <input type="number" class="form-control" id="billingAmount"
+                                    placeholder="Enter Amount (₱)" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="loanProvider" class="form-label">Select Loan Provider</label>
+                                <select class="form-select" id="loanProvider" required>
+                                    <option value="" disabled selected>Select your provider</option>
+                                    <option value="provider1">Kwarta</option>
+                                    <option value="provider2">BPI</option>
+                                    <option value="provider3">BDO</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">PAY NOW</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Insurance Modal-->
+    <div class="modal fade" id="insurancePaymentForm" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    <div class="myform bg-dark">
+                        <h1 class="text-center">Insurance Payment</h1>
+                        <form>
+                            <div class="mb-3">
+                                <label for="policyNumber" class="form-label">Enter Policy Number</label>
+                                <input type="text" class="form-control" id="policyNumber"
+                                    placeholder="Your Policy Number" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="insuredName" class="form-label">Enter Insured Name</label>
+                                <input type="text" class="form-control" id="insuredName" placeholder="Full Name"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="billingAmount" class="form-label">Enter Payment Amount</label>
+                                <input type="number" class="form-control" id="billingAmount"
+                                    placeholder="Enter Amount (₱)" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="insuranceProvider" class="form-label">Select Insurance Provider</label>
+                                <select class="form-select" id="insuranceProvider" required>
+                                    <option value="" disabled selected>Select your provider</option>
+                                    <option value="provider1">Standard Insurance</option>
+                                    <option value="provider2">Axa</option>
+                                    <option value="provider3">Sunlife</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">PAY NOW</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Others-->
+    <div class="modal fade" id="notAvailableModal" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ModalLabel">Service Not Available</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>We're sorry, but this service is currently not available. Please check back later or contact
+                        customer support for further assistance.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container mt-5">
+        <div class="d-flex justify-content-start mb-4">
+            <button class="btn btn-outline-secondary" onclick="window.location.href='{{url_for('dashboard')}}'">
+                <i class="fas fa-arrow-left"></i> <!-- Back Arrow -->
+            </button>
+        </div> 
+        <h3 class="text-center mb-4">Categories</h3>
+        <div class="row text-center">
+            <!-- Electric Utilities -->
+            <div class="col-4 mb-4" data-bs-toggle="modal" data-bs-target="#electricBillForm">
+                <div class="icon-box">
+                    <i class="fas fa-bolt icon-img"></i>
+                    <p>Electric Utilities</p>
+                </div>
+            </div>
+            <!-- Healthcare -->
+            <div class="col-4 mb-4" data-bs-toggle="modal" data-bs-target="#healthcareBillForm">
+                <div class="icon-box">
+                    <i class="fas fa-notes-medical icon-img"></i>
+                    <p>Healthcare</p>
+                </div>
+            </div>
+            <!-- Transportation -->
+            <div class="col-4 mb-4" data-bs-toggle="modal" data-bs-target="#transportationPaymentForm">
+                <div class="icon-box">
+                    <i class="fas fa-bus icon-img"></i>
+                    <p>Transportation</p>
+                </div>
+            </div>
+            <!-- Telecoms -->
+            <div class="col-4 mb-4" data-bs-toggle="modal" data-bs-target="#telecomPaymentForm">
+                <div class="icon-box">
+                    <i class="fas fa-broadcast-tower icon-img"></i>
+                    <p>Telecoms</p>
+                </div>
+            </div>
+            <!-- Credit Cards -->
+            <div class="col-4 mb-4" data-bs-toggle="modal" data-bs-target="#creditCardPaymentForm">
+                <div class="icon-box">
+                    <i class="fas fa-credit-card icon-img"></i>
+                    <p>Credit Cards</p>
+                </div>
+            </div>
+            <!-- Water Utilities -->
+            <div class="col-4 mb-4" data-bs-toggle="modal" data-bs-target="#waterUtilityPaymentForm">
+                <div class="icon-box">
+                    <i class="fas fa-water icon-img"></i>
+                    <p>Water Utilities</p>
+                </div>
+            </div>
+            <!-- Internet -->
+            <div class="col-4 mb-4" data-bs-toggle="modal" data-bs-target="#internetPaymentForm">
+                <div class="icon-box">
+                    <i class="fas fa-wifi icon-img"></i>
+                    <p>Internet</p>
+                </div>
+            </div>
+            <!-- Loans -->
+            <div class="col-4 mb-4" data-bs-toggle="modal" data-bs-target="#loanPaymentForm">
+                <div class="icon-box">
+                    <i class="fas fa-hand-holding-usd icon-img"></i>
+                    <p>Loans</p>
+                </div>
+            </div>
+            <!-- Insurance -->
+            <div class="col-4 mb-4" data-bs-toggle="modal" data-bs-target="#insurancePaymentForm">
+                <div class="icon-box">
+                    <i class="fas fa-shield-alt icon-img"></i>
+                    <p>Insurance</p>
+                </div>
+            </div>
+            <!-- Others -->
+            <div class="col-4 mb-4" data-bs-toggle="modal" data-bs-target="#notAvailableModal">
+                <div class="icon-box">
+                    <i class="fas fa-ellipsis-h icon-img"></i>
+                    <p>Others</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

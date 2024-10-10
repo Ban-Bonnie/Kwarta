@@ -1,0 +1,67 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.container {
+    margin-top: 50px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.provider-options {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.provider-option {
+    margin: 10px;
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+}
+
+.provider-logo {
+    width: 80px; /* Fixed width */
+    height: 80px; /* Fixed height */
+    object-fit: contain; /* Maintain aspect ratio */
+    margin-bottom: 5px;
+    transition: transform 0.2s, border 0.2s; /* Add border transition */
+}
+
+.provider-radio {
+    display: none; /* Hide default radio button */
+}
+
+.provider-radio:checked + .provider-logo {
+    border: 2px solid #007bff; /* Border for selected state */
+    transform: scale(1.1); /* Slightly enlarge selected logo */
+}
+
+.amount-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+.amount-button {
+    flex: 1;
+    margin: 0 5px;
+}
+
+.buy-button {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold; /* Make button text bold */
+}
+
+.buy-button:hover {
+    background-color: #0056b3;
+    transition: background-color 0.3s; /* Smooth transition */
+}
+
+.form-label {
+    font-weight: bold; /* Make form labels bold */
+}

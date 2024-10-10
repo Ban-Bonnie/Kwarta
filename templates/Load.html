@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../static/fontawesome/css/all.css" />
+    <link rel="stylesheet" href="../static/dashboardstyle.css" />
+    <link rel="stylesheet" href="../static/Load.css" />
+    <title>Load</title>
+</head>
+
+<body>
+    <!-- Dashboard -->
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-transparent py-4 px-4 shadow-sm">
+        <div class="d-flex align-items-center">
+            <!-- Back Button Icon with increased size and spacing -->
+            <i class="fas fa-peso-sign me-2"></i>Kwarta
+        </div>
+        </div>
+        <div class="ml-auto ms-auto d-flex align-items-center text-end nav-icon">
+            <i class="fas fa-bell primary-text navbar-icon me-3" id="notification-icon" title="Notifications"
+                style="font-size: 1.5rem; cursor: pointer;"></i>
+            <i class="fas fa-user-circle primary-text navbar-icon" id="profile-icon" title="Profile"
+                style="font-size: 1.5rem; cursor: pointer;"></i>
+        </div>
+    </nav>
+
+    <!--Load Modal-->
+    <div class="modal" id="successModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Purchase Successful</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Your load has been successfully purchased!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="d-flex justify-content-start mb-4">
+            <button class="btn btn-outline-secondary" onclick="window.location.href='{{url_for('dashboard')}}'">
+                <i class="fas fa-arrow-left"></i> <!-- Back Arrow -->
+            </button>
+        </div>
+        <h2 class="text-center">Buy Load</h2>
+    
+        <!-- Correct form tag here -->
+        <form method="post" action="{{ url_for('load_process') }}">
+    
+            <div class="text-center mb-4 provider-options">
+                <label class="provider-option">
+                    <input type="radio" name="provider" value="Globe" class="provider-radio" aria-labelledby="globe-label" />
+                    <img src="{{ url_for('static', filename='img/Globe.png') }}" alt="Globe" class="provider-logo" id="globe-label">
+                </label>
+                <label class="provider-option">
+                    <input type="radio" name="provider" value="TM" class="provider-radio" aria-labelledby="tm-label" />
+                    <img src="{{ url_for('static', filename='img/TM.png') }}" alt="TM" class="provider-logo" id="tm-label">
+                </label>
+                <label class="provider-option">
+                    <input type="radio" name="provider" value="Smart" class="provider-radio" aria-labelledby="smart-label" />
+                    <img src="{{ url_for('static', filename='img/Smart.png') }}" alt="Smart" class="provider-logo" id="smart-label">
+                </label>
+                <label class="provider-option">
+                    <input type="radio" name="provider" value="TNT" class="provider-radio" aria-labelledby="tnt-label" />
+                    <img src="{{ url_for('static', filename='img/tnt.png') }}" alt="TNT" class="provider-logo" id="tnt-label">
+                </label>
+                <label class="provider-option">
+                    <input type="radio" name="provider" value="DITO" class="provider-radio" aria-labelledby="dito-label" />
+                    <img src="{{ url_for('static', filename='img/Dito.png') }}" alt="DITO" class="provider-logo" id="dito-label">
+                </label>
+            </div>
+    
+            <div class="mb-3">
+                <label for="phoneNumber" class="form-label">Buy load for</label>
+                <input name="phoneNumber" type="tel" class="form-control" id="phoneNumber" placeholder="+63 XXXXXXXXXX" required>
+            </div>
+    
+            <div class="amount-buttons">
+                <!-- Buttons for predefined amounts -->
+                <button type="button" class="btn btn-light amount-button" data-value="10">10 PHP</button>
+                <button type="button" class="btn btn-light amount-button" data-value="20">20 PHP</button>
+                <button type="button" class="btn btn-light amount-button" data-value="50">50 PHP</button>
+                <button type="button" class="btn btn-light amount-button" data-value="100">100 PHP</button>
+                <button type="button" class="btn btn-light amount-button" data-value="150">150 PHP</button>
+                <button type="button" class="btn btn-light amount-button" data-value="300">300 PHP</button>
+            </div>
+    
+            <!-- Hidden input to capture selected amount -->
+            <input type="hidden" name="predefinedAmount" id="predefinedAmount">
+    
+            <div class="mb-3">
+                <label for="customAmount" class="form-label">Enter custom amount</label>
+                <input name="customAmount" type="number" class="form-control" id="customAmount" placeholder="PHP 0.00">
+            </div>
+    
+            <button type="submit" class="btn buy-button w-100">Buy Now</button>
+        </form>
+    </div>
+    
+    <script>
+        // Add event listeners to buttons to set value for hidden input
+        document.querySelectorAll('.amount-button').forEach(button => {
+            button.addEventListener('click', function() {
+                // Set the predefined amount in the hidden input
+                document.getElementById('predefinedAmount').value = this.getAttribute('data-value');
+                // Clear the custom amount field
+                document.getElementById('customAmount').value = '';
+            });
+        });
+    
+        // Clear predefined amount if custom amount is entered
+        document.getElementById('customAmount').addEventListener('input', function() {
+            document.getElementById('predefinedAmount').value = '';
+        });
+    </script>
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../JS/Dashboardscrpt.js"></script>
+</body>
+
+</html>

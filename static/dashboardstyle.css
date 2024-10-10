@@ -1,0 +1,385 @@
+:root {
+  --main-bg-color: #009d63;
+  --main-text-color: #009d63;
+  --second-text-color: #bbbec5;
+  --second-bg-color: #c1efde;
+}
+
+.primary-text {
+  color: var(--main-text-color);
+}
+
+.second-text {
+  color: var(--second-text-color);
+}
+
+.primary-bg {
+  background-color: var(--main-bg-color);
+}
+
+.secondary-bg {
+  background-color: var(--second-bg-color);
+}
+
+.rounded-full {
+  border-radius: 100%;
+}
+
+#wrapper {
+  overflow-x: hidden;
+  background-image: linear-gradient(to right,
+      #baf3d7,
+      #c2f5de,
+      #cbf7e4,
+      #d4f8ea,
+      #ddfaef);
+}
+
+#sidebar-wrapper {
+  min-height: 100vh;
+  margin-left: -15rem;
+  -webkit-transition: margin 0.25s ease-out;
+  -moz-transition: margin 0.25s ease-out;
+  -o-transition: margin 0.25s ease-out;
+  transition: margin 0.25s ease-out;
+}
+
+#sidebar-wrapper .sidebar-heading {
+  padding: 0.875rem 1.25rem;
+  font-size: 1.2rem;
+}
+
+#sidebar-wrapper .list-group {
+  width: 15rem;
+}
+
+#page-content-wrapper {
+  min-width: 100vw;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+  margin-left: 0;
+}
+
+#menu-toggle {
+  cursor: pointer;
+}
+
+.list-group-item {
+  border: none;
+  padding: 20px 30px;
+}
+
+.list-group-item.active {
+  background-color: transparent;
+  color: var(--main-text-color);
+  font-weight: bold;
+  border: none;
+}
+
+@media (min-width: 768px) {
+  #sidebar-wrapper {
+    margin-left: 0;
+  }
+
+  #page-content-wrapper {
+    min-width: 0;
+    width: 100%;
+  }
+
+  #wrapper.toggled #sidebar-wrapper {
+    margin-left: -15rem;
+  }
+}
+
+/*Dashboard*/
+
+/* Specific icon class for navbar icons */
+.navbar-icon {
+  font-size: 2rem; /* Larger size for icons */
+  transition: transform 0.3s; /* Smooth scaling on hover */
+}
+
+.navbar-icon:hover {
+  transform: scale(1.2); /* Slightly enlarge on hover */
+}
+
+/* Ensure the navbar is responsive */
+.navbar {
+  display: flex;
+  justify-content: space-between; /* Distribute items evenly */
+  flex-wrap: wrap; /* Allow items to wrap on small screens */
+}
+
+/* Adjust margin for the notification and profile icons */
+.nav-icon {
+  margin-left: auto; /* Align icons to the right */
+  display: flex;
+  align-items: center;
+}
+
+/* Add space between icons */
+.nav-icon .navbar-icon {
+  margin-left: 15px; /* Add space between icons */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .navbar-icon {
+      font-size: 1.5rem; /* Smaller size for mobile */
+  }
+
+  .navbar {
+      flex-direction: column; /* Stack items vertically */
+      align-items: flex-start; /* Align items to the left */
+  }
+
+  h2 {
+      margin-bottom: 10px; /* Add space below the title on mobile */
+  }
+}
+
+.balance {
+  display: flex;
+  flex-wrap: wrap;
+  width: 125vh;
+}
+
+.balance .col-md-4 {
+  flex: 1;
+  min-width: 250px;
+
+}
+#wrapper.toggled .balance .col-md-4 {
+  flex: 1;
+  max-width: 100%;
+}
+/* transaction his */
+.transac {
+  display: flex;
+  flex-wrap: wrap;
+  width: 150vh;
+}
+
+/* 8 Buttons */
+.Buttons .btn {
+  width: 100%; 
+  height: 10vh; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  text-align: center; 
+  border-radius: 12px; 
+  padding: 0; 
+  font-size: 16px;
+}
+
+.icon-lg {
+  font-size: 25px; /* icon size*/
+}
+
+/* Adjust column spacing */
+.Buttons .col-3 {
+  padding: 0; /* Reset padding for consistent spacing */
+  margin: 1vh; /* Set vertical margin between buttons */
+  width: 25vh;
+}
+
+/* Send Form */
+.modal .modal-content {
+  width: 80%;
+  margin: 0 auto;
+  background-color: #533747; /* Updated form background color */
+  color: #FFFFFF; /* Text color */
+}
+
+.modal .modal-body {
+  padding: 0;
+}
+
+.modal .btn-close {
+  position: absolute;
+  right: 0;
+  padding: 1em;
+  color: #86BBBD; /* Updated close button color */
+}
+
+.modal h1 {
+  font-size: 2.3em;
+  font-weight: bold;
+  color: #76949F; /* Updated heading color */
+}
+
+.modal .myform {
+  padding: 2em;
+  max-width: 100%;
+  color: #FFFFFF; /* Text color */
+  background-color: #6A6B83; /* Updated form background color */
+  box-shadow: 0 4px 6px 0 rgba(22, 22, 26, 0.18);
+}
+
+@media (max-width: 375px) {
+  .modal .myform {
+      max-width: 100%;
+      margin: 0 auto;
+  }
+  .modal .modal-dialog {
+      width: 90%;
+      max-width: 375px;
+      height: auto;
+      margin: 20px auto;
+  }
+  .modal .modal-content {
+      border-radius: 0.25em;
+  }
+}
+
+.modal .form-control:focus {
+  box-shadow: inset 0 -1px 0 #86BBBD; /* Updated focus border color */
+}
+
+.modal .form-control {
+  background-color: inherit;
+  color: #FFFFFF; /* Input text color */
+  padding-left: 0;
+  border: 0;
+  border-bottom: 1px solid #76949F; /* Updated input border color */
+}
+
+.modal .myform .btn {
+  width: 100%;
+  font-weight: 800;
+  background-color: #86BBBD; /* Updated button background color */
+  border-radius: 0;
+  padding: 0.5em 0;
+  color: #191919; /* Button text color */
+}
+
+.modal .myform .btn:hover {
+  background-color: #76949F; /* Updated button hover background color */
+  color: #FFFFFF; /* Button hover text color */
+  border-color: #76949F; /* Button hover border color */
+}
+
+.modal p {
+  text-align: center;
+  padding-top: 2em;
+  color: #e1e1e1; /* Paragraph text color */
+}
+
+.modal p a {
+  color: #e1e1e1; /* Link color */
+  text-decoration: none;
+}
+
+.modal p a:hover {
+  color: #FFFFFF; /* Link hover color */
+}
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none; /* Fremove down and up arrow */
+    margin: 0;
+}
+/* Styling the peso sign and input-group */
+.input-group {
+  position: relative;
+}
+
+.input-group-text {
+  background-color: transparent; /* Match with form background color */
+  color: #aaaaaa; /* Light gray placeholder color */
+  border: none;
+  border-bottom: 1.5px solid #76949F; /* Same as input border */
+  padding: 0.5em 1em;
+}
+
+.form-control {
+  padding-left: 0.5em; /* Add some padding to input */
+}
+
+/* Recharge style */
+#bpiFields .card {
+  max-width: 500px;
+  margin: auto;
+  color: black;
+  border-radius: 20 px;
+}
+
+#bpiFields p {
+  margin: 0px;
+}
+
+#bpiFields .container .h8 {
+  font-size: 30px;
+  font-weight: 800;
+  text-align: center;
+}
+
+#bpiFields .btn.btn-primary {
+  width: 100%;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+  background-image: linear-gradient(to right, #77A1D3 0%, #79CBCA 51%, #77A1D3 100%);
+  border: none;
+  transition: 0.5s;
+  background-size: 200% auto;
+
+}
+
+
+#bpiFields .btn.btn.btn-primary:hover {
+  background-position: right center;
+  color: #fff;
+  text-decoration: none;
+}
+
+
+
+#bpiFields .btn.btn-primary:hover .fas.fa-arrow-right {
+  transform: translate(15px);
+  transition: transform 0.2s ease-in;
+}
+
+#bpiFields .form-control {
+  color: white;
+  background-color: #223C60;
+  border: 2px solid transparent;
+  height: 60px;
+  padding-left: 20px;
+  vertical-align: middle;
+}
+
+#bpiFields .form-control:focus {
+  color: white;
+  background-color: #0C4160;
+  border: 2px solid #2d4dda;
+  box-shadow: none;
+}
+
+#bpiFields .text {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#bpiFields ::placeholder {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pd{
+  margin-bottom: -25px;
+}
+
+.rows{
+  font-weight: bold;
+}
+
+.column{
+  font-weight: bolder;
+  
+}

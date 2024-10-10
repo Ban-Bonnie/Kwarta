@@ -1,0 +1,26 @@
+
+.icon-box {
+    text-align: center;
+    padding: 20px;
+    transition: transform 0.2s ease-in-out, background-color 0.2s ease;
+}
+
+.icon-img {
+    font-size: 50px;
+    margin-bottom: 10px;
+    transition: color 0.2s ease;
+}
+
+.icon-box:hover {
+    transform: translateY(-10px);
+    background-color: #f0f0f0;
+}
+
+.icon-box:hover .icon-img {
+    color: #007bff;
+}
+
+.icon-box p {
+    margin-top: 10px;
+    font-size: 16px;
+}
