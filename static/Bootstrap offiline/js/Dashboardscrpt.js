@@ -33,3 +33,21 @@ function toggleBankFields() {
     }
 }
 //BANK
+
+//notif
+document.getElementById('flexSwitchCheckDefault').addEventListener('click', () => {
+    document.querySelector('.toggle-badge').classList.toggle('d-none');
+});
+
+document.getElementById('notification-icon').addEventListener('click', () => {
+    const dropdown = document.getElementById('notification-dropdown');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+});
+
+// Close the dropdown if clicked outside
+window.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('notification-dropdown');
+    if (!event.target.matches('#notification-icon') && !event.target.closest('#notification-container')) {
+        dropdown.style.display = 'none';
+    }
+});

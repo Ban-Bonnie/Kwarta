@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_mysqldb import MySQL
 from datetime import datetime
 import string, random
@@ -132,6 +132,7 @@ class Kwarta:
         def dashboard():
             return render_template("dashboard.html", account=self.account, history=self.historyTuple)
         
+        
         @self.app.route("/transaction")
         def transaction():
             self.refreshAccounts()
@@ -152,6 +153,10 @@ class Kwarta:
         @self.app.route("/Donate")
         def Donate():
             return render_template("Donate.html")
+        
+        @self.app.route("/Profile")
+        def Profile():
+            return render_template("Profile.html", account=self.account, history=self.historyTuple)
 
 
 
@@ -221,6 +226,49 @@ class Kwarta:
                 cursor.close()
                 print(f"Successfully registered user {username}")
                 return redirect("/")
+        
+
+
+        @self.app.route("/update_profile", methods=["POST"])
+        def update_profile():
+            if request.method == 'POST':
+                name = request.form.get("name")
+                username = request.form.get("username")
+                phone = request.form.get("phone")
+                current_password = request.form.get("current_password")  # You can keep this for security reasons
+                new_password = request.form.get("new_password")
+                confirm_password = request.form.get("confirm_password")
+
+                cursor = self.mysql.connection.cursor()
+
+                # Check if the current password is provided, but do not enforce it for profile update
+                if current_password:
+                    cursor.execute("SELECT password FROM accounts WHERE userId = %s", (self.account[0],))
+                    db_password = cursor.fetchone()
+
+                    if db_password is None or db_password[0] != current_password:
+                        print("Current password is incorrect.", "error")
+                        cursor.close()
+                        return redirect(url_for("Profile"))
+
+                # Only update the user's profile information
+                cursor.execute("""
+                    UPDATE accounts 
+                    SET name = %s, username = %s, phone = %s 
+                    WHERE userId = %s """, (name, username, phone, self.account[0]))
+
+                # Check and update password if both new password and confirmation are provided
+                if new_password and new_password == confirm_password:
+                    cursor.execute("UPDATE accounts SET password = %s WHERE userId = %s", (new_password, self.account[0]))
+
+                self.mysql.connection.commit()
+                cursor.close()
+
+                print("Profile updated successfully!", "success")
+                self.refreshAccounts()
+                return redirect(url_for("Profile"))
+
+
 
 
 

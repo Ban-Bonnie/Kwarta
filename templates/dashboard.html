@@ -19,9 +19,9 @@
                 <i class="fas fa-peso-sign me-2"></i>Kwarta
             </div>
             <div class="list-group list-group-flush my-3">
-                <a href="#" class="list-group-item list-group-item-action bg-transparent second-text active"><i
+                <a href="{{url_for('dashboard')}}" class="list-group-item list-group-item-action bg-transparent second-text active"><i
                         class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
-                <a href="#" class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
+                <a href="{{url_for('Profile')}}" class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
                         class="fas fa-user me-2"></i>Profile</a>
                 <a href="{{url_for('home')}}"
                     class="list-group-item list-group-item-action bg-transparent text-danger fw-bold"><i
@@ -221,12 +221,32 @@
             <nav class="navbar navbar-expand-lg navbar-light bg-transparent py-4 px-4">
                 <div class="d-flex align-items-center">
                     <i class="fas fa-align-left primary-text navbar-icon" id="menu-toggle"></i>
-                    <h2 class="fs-2 m-0">Dashboard</h2>
+                    <h2 class="fs-2 fw-bold" style="margin-left: 20px;">Dashboard</h2>
                 </div>
-                <div class="ml-auto ms-auto d-flex align-items-center text-end nav-icon">
-                    <i class="fas fa-bell primary-text navbar-icon me-3" id="notification-icon"
-                        title="Notifications"></i>
-                    <i class="fas fa-user-circle primary-text navbar-icon" id="profile-icon" title="Profile"></i>
+                <div class="ml-auto d-flex align-items-center text-end nav-icon">
+                    <!-- Notification Icon with Badge -->
+                    <div class="position-relative" id="notification-container">
+                        <a href="javascript:void(0);" class="text-body mx-5" id="notification-icon">
+                            <i class="fas fa-bell fa-2x"></i>
+                            <span class="badge rounded-pill badge-notification bg-danger toggle-badge d-none" id="notification-badge">9</span>
+                        </a>
+                        <div class="notification-dropdown" id="notification-dropdown">
+                            <div class="notification-item">Notification 1</div>
+                            <div class="notification-item">Notification 2</div>
+                            <div class="notification-item">Notification 3</div>
+                            <div class="notification-item">Notification 1</div>
+                            <div class="notification-item">Notification 2</div>
+                            <div class="notification-item">Notification 3</div>
+                            <div class="notification-item">Notification 1</div>
+                            <div class="notification-item">Notification 2</div>
+                            <div class="notification-item">Notification 3</div>
+                            <!-- Add more notifications as needed -->
+                        </div>
+                    </div>
+                    <!-- Toggle Switch -->
+                    <div class="form-check form-switch">
+                        <input  class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" />
+                    </div>
                 </div>
             </nav>
 
@@ -236,8 +256,11 @@
                 <div class="row px-2 justify-content-center">
                     <div class="balance row g-3 my-2">
                         <div class="col-md-4">
-                            <div
-                                class="p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded">
+                            <div class="d-flex justify-content-start align-items-center mb-3">
+                                <i class="fas fa-user fs-2 me-2" aria-hidden="true"></i> <!-- Font Awesome icon -->
+                                <h1 class="fs-2 user-name">{{account[3]}}</h1> <!-- Placeholder for user name -->
+                            </div>
+                            <div class="p-3 bg-white shadow-sm d-flex justify-content-around align-items-center rounded">
                                 <div class="">
                                     <h3 align="center" class="fs-2">₱{{account[4]}}</h3>
                                     <p align="center" class="fs-5">Balance</p>
@@ -313,8 +336,7 @@
 
                         {% if history %}
                         <div class="col-md-6 text-end">
-                            <!-- Gem pagamaya ang see all pls ty -->
-                            <a href="{{url_for('transaction')}}" class="fs-4 mb-3 text-decoration-none">See all...</a>
+                            <a href="{{url_for('transaction')}}" class="fs-5 mb-5 text-decoration-none">See all...</a>
                         </div>
                         {% endif %}
 

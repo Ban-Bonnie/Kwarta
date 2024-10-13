@@ -383,3 +383,53 @@ input[type=number]::-webkit-inner-spin-button {
   font-weight: bolder;
   
 }
+
+/*notif*/
+.toggle-badge {
+  position: absolute;
+  top: -10px; /* Adjusted to position the badge above the mail icon */
+  right: 40px; /* Adjusted based on your layout */
+  background-color: red; /* Badge background color */
+  color: white; /* Badge text color */
+  border-radius: 50%; /* Make it circular */
+  padding: 5px 8px; /* Padding for the badge */
+  font-size: 12px; /* Font size for the badge */
+  font-weight: bold; /* Bold text for visibility */
+}
+
+.notification-dropdown {
+  max-height: 200px; /* Approx height for 3 notifications */
+  overflow-y: auto; /* Enables vertical scrolling */
+  width: 300px; /* Adjust width as needed */
+  background-color: #fff; /* Background color for the dropdown */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Dropdown shadow */
+  border-radius: 5px; /* Rounded corners */
+  position: absolute;
+  top: 40px;
+  right: 0;
+  z-index: 1000;
+  display: none; /* Hide dropdown by default */
+}
+
+#notification-dropdown::-webkit-scrollbar {
+  display: none;
+}
+
+.notification-item {
+  padding: 10px 15px; /* Padding for items */
+  border-bottom: 1px solid #eee; /* Divider between items */
+  color: black; /* Text color */
+  text-align: left
+}
+
+.notification-item:last-child {
+  border-bottom: none; /* Remove last border */
+}
+
+.notification-item:hover {
+  background-color: #f0f0f0; /* Highlight effect on hover */
+}
+
+.d-none {
+  display: none; /* Class to hide elements */
+}

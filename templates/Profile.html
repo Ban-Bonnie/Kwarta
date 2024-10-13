@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='fontawesome/css/all.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboardstyle.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='Profile.css') }}" />
+    <title>Kwarta</title>
+</head>
+
+<body>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <div class="bg-white" id="sidebar-wrapper">
+            <div class="sidebar-heading text-center py-4 primary-text fs-4 fw-bold text-uppercase border-bottom">
+                <i class="fas fa-peso-sign me-2"></i>Kwarta
+            </div>
+            <div class="list-group list-group-flush my-3">
+                <a href="{{url_for('dashboard')}}"
+                    class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
+                        class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+                <a href="{{url_for('Profile')}}"
+                    class="list-group-item list-group-item-action bg-transparent second-text active"><i
+                        class="fas fa-user me-2"></i>Profile</a>
+                <a href="{{url_for('home')}}"
+                    class="list-group-item list-group-item-action bg-transparent text-danger fw-bold"><i
+                        class="fas fa-power-off me-2"></i>Logout</a>
+            </div>
+        </div>
+
+        <!--Dashboard-->
+        <div id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-light bg-transparent py-4 px-4">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-align-left primary-text navbar-icon" id="menu-toggle"></i>
+                    <h2 class="fs-2 fw-bold" style="margin-left: 20px;">Profile</h2>
+                </div>
+                <div class="ml-auto d-flex align-items-center text-end nav-icon">
+                    <!-- Notification Icon with Badge -->
+                    <div class="position-relative" id="notification-container">
+                        <a href="javascript:void(0);" class="text-body mx-5" id="notification-icon">
+                            <i class="fas fa-bell fa-2x"></i>
+                            <span class="badge rounded-pill badge-notification bg-danger toggle-badge d-none"
+                                id="notification-badge">9</span>
+                        </a>
+                        <div class="notification-dropdown" id="notification-dropdown">
+                            <div class="notification-item">Notification 1</div>
+                            <div class="notification-item">Notification 2</div>
+                            <div class="notification-item">Notification 3</div>
+                            <div class="notification-item">Notification 1</div>
+                            <div class="notification-item">Notification 2</div>
+                            <div class="notification-item">Notification 3</div>
+                            <div class="notification-item">Notification 1</div>
+                            <div class="notification-item">Notification 2</div>
+                            <div class="notification-item">Notification 3</div>
+                            <!-- Add more notifications as needed -->
+                        </div>
+                    </div>
+                    <!-- Toggle Switch -->
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" />
+                    </div>
+                </div>
+            </nav>
+
+
+            <div class="container">
+                <div class="card">
+                    <div class="e-profile">
+                        <div class="row">
+                            <div class="col text-sm-left mb-3">
+                                <h4>{{account[3]}}</h4>
+                                <h5>@{{account[1]}}</h5>
+                            </div>
+                        </div>
+                        <div class="tab-content pt-3">
+                            <div class="tab-pane active">
+                                <form class="form" method="POST" action="{{ url_for('update_profile') }}" novalidate="">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label>Name</label>
+                                                <input class="form-control" type="text" name="name"
+                                                    placeholder="Full Name" value="{{ account[3] }}">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label>Username</label>
+                                                <input class="form-control" type="text" name="username"
+                                                    placeholder="Username" value="{{ account[1] }}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label>Phone Number</label>
+                                                <input class="form-control" type="tel" id="registerPhone" name="phone"
+                                                    value="{{ account[5] }}" placeholder="09123456789" minlength="11"
+                                                    maxlength="11" pattern="[0-9]{11}" required
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <center>
+                                        <div class="mb-2">Change Password</div>
+                                    </center>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label>Current Password</label>
+                                                <input class="form-control" type="password" name="current_password"
+                                                    placeholder="••••••" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label>New Password</label>
+                                                <input class="form-control" type="password" name="new_password"
+                                                    placeholder="••••••">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label>Confirm Password</label>
+                                                <input class="form-control" type="password" name="confirm_password"
+                                                    placeholder="••••••">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col d-flex justify-content-end">
+                                            <button class="btn btn-primary" type="submit">Save Changes</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+        </div>
+    </div>
+    </div>
+
+
+    <script src="{{url_for('static', filename='Bootstrap offiline/js/bootstrap.bundle.min.js')}}"></script>
+    <script src="{{url_for('static', filename='Bootstrap offiline/js/Dashboardscrpt.js')}}"></script>
+
+
+
+</body>
+
+</html>
