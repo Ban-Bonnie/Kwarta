@@ -235,13 +235,13 @@ class Kwarta:
                 name = request.form.get("name")
                 username = request.form.get("username")
                 phone = request.form.get("phone")
-                current_password = request.form.get("current_password")  # You can keep this for security reasons
+                current_password = request.form.get("current_password")
                 new_password = request.form.get("new_password")
                 confirm_password = request.form.get("confirm_password")
 
                 cursor = self.mysql.connection.cursor()
 
-                # Check if the current password is provided, but do not enforce it for profile update
+
                 if current_password:
                     cursor.execute("SELECT password FROM accounts WHERE userId = %s", (self.account[0],))
                     db_password = cursor.fetchone()
@@ -251,13 +251,13 @@ class Kwarta:
                         cursor.close()
                         return redirect(url_for("Profile"))
 
-                # Only update the user's profile information
+
                 cursor.execute("""
                     UPDATE accounts 
                     SET name = %s, username = %s, phone = %s 
                     WHERE userId = %s """, (name, username, phone, self.account[0]))
 
-                # Check and update password if both new password and confirmation are provided
+
                 if new_password and new_password == confirm_password:
                     cursor.execute("UPDATE accounts SET password = %s WHERE userId = %s", (new_password, self.account[0]))
 
