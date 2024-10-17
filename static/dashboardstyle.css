@@ -381,9 +381,8 @@ input[type=number]::-webkit-inner-spin-button {
 
 .column{
   font-weight: bolder;
-  
-}
 
+}
 /*notif*/
 .toggle-badge {
   position: absolute;
@@ -396,7 +395,6 @@ input[type=number]::-webkit-inner-spin-button {
   font-size: 12px; /* Font size for the badge */
   font-weight: bold; /* Bold text for visibility */
 }
-
 .notification-dropdown {
   max-height: 200px; /* Approx height for 3 notifications */
   overflow-y: auto; /* Enables vertical scrolling */
@@ -408,28 +406,24 @@ input[type=number]::-webkit-inner-spin-button {
   top: 40px;
   right: 0;
   z-index: 1000;
-  display: none;
+  display: none; /* Hide dropdown by default */
 }
-
 #notification-dropdown::-webkit-scrollbar {
   display: none;
 }
-
 .notification-item {
   padding: 10px 15px; /* Padding for items */
   border-bottom: 1px solid #eee; /* Divider between items */
   color: black; /* Text color */
   text-align: left
 }
-
 .notification-item:last-child {
   border-bottom: none; /* Remove last border */
 }
-
 .notification-item:hover {
   background-color: #f0f0f0; /* Highlight effect on hover */
 }
-
 .d-none {
   display: none; /* Class to hide elements */
+  
 }

@@ -34,23 +34,28 @@
 
 
         <!--Change name modal-->
-        <div class="modal fade" id="changeNameModal" tabindex="-1" aria-labelledby="changeNameModalLabel" aria-hidden="true">
+        <div class="modal fade" id="changeNameModal" tabindex="-1" aria-labelledby="changeNameModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-body">
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                         <div class="myform bg-dark">
-                            <h1 class="text-center">Change Your Name</h1>
-        
+                            <h1 class="text-center">Change Name</h1>
+
                             <!-- CHANGE NAME FORM -->
-                            <form method="post" action="/change_name_process">
+                            <form method="post" action="/update_profile_process">
+                                <input name="update" type="hidden" value="changeName">
                                 <div class="mb-3 mt-4">
                                     <label for="newName" class="form-label">New Name</label>
-                                    <input name="new_name" autocomplete="off" type="text" class="form-control" id="newName" placeholder="Enter your new name" required>
+                                    <input name="new_name" autocomplete="off" type="text" class="form-control"
+                                        id="newName" placeholder="Enter your new name" required>
                                 </div>
                                 <div class="mb-3">
                                     <label for="password" class="form-label">Password</label>
-                                    <input name="password" type="password" class="form-control" id="password" required>
+                                    <input placeholder="Enter Password" name="password" type="password"
+                                        class="form-control" id="password" required>
                                 </div>
                                 <button type="submit" class="btn btn-light mt-3">Change</button>
                                 <p class="text-danger" id="error-message" style="display: none;">Incorrect Password</p>
@@ -62,23 +67,28 @@
         </div>
 
         <!--Change number modal-->
-        <div class="modal fade" id="changeNumberModal" tabindex="-1" aria-labelledby="changeNumberModalLabel" aria-hidden="true">
+        <div class="modal fade" id="changeNumberModal" tabindex="-1" aria-labelledby="changeNumberModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-body">
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                         <div class="myform bg-dark">
                             <h1 class="text-center">Change Your Phone Number</h1>
-        
+
                             <!-- CHANGE NUMBER FORM -->
-                            <form method="post" action="/change_number_process">
+                            <form method="post" action="/update_profile_process">
+                                <input name="update" type="hidden" value="changeNumber">
                                 <div class="mb-3 mt-4">
                                     <label for="newPhoneNumber" class="form-label">New Phone Number</label>
-                                    <input name="new_phone_number" autocomplete="off" type="text" class="form-control" id="newPhoneNumber" placeholder="Enter your new phone number" required>
+                                    <input name="new_phone_number" autocomplete="off" type="text" class="form-control"
+                                        id="newPhoneNumber" placeholder="Enter your new phone number" required>
                                 </div>
                                 <div class="mb-3">
                                     <label for="password" class="form-label">Password</label>
-                                    <input name="password" type="password" class="form-control" id="password" required>
+                                    <input placeholder="Enter Password" name="password" type="password"
+                                        class="form-control" id="password" required>
                                 </div>
                                 <button type="submit" class="btn btn-light mt-3">Change</button>
                                 <p class="text-danger" id="error-message" style="display: none;">Incorrect Password</p>
@@ -90,36 +100,70 @@
         </div>
 
         <!--Change password modal-->
-        <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-body">
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                         <div class="myform bg-dark">
                             <h1 class="text-center">Change Your Password</h1>
-        
+
                             <!-- CHANGE PASSWORD FORM -->
-                            <form method="post" action="/change_password_process">
+                            <form method="post" action="/update_profile_process">
+                                <input name="update" type="hidden" value="changePassword">
                                 <div class="mb-3 mt-4">
                                     <label for="currentPassword" class="form-label">Current Password</label>
-                                    <input name="current_password" type="password" class="form-control" id="currentPassword" required>
+                                    <input placeholder="Enter Password" name="current_password" type="password"
+                                        class="form-control" id="currentPassword" required>
                                 </div>
                                 <div class="mb-3">
                                     <label for="newPassword" class="form-label">New Password</label>
-                                    <input name="new_password" type="password" class="form-control" id="newPassword" required>
+                                    <input placeholder="Enter New Password" name="new_password" type="password"
+                                        class="form-control" id="newPassword" required>
                                 </div>
                                 <div class="mb-3">
                                     <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
-                                    <input name="confirm_new_password" type="password" class="form-control" id="confirmNewPassword" required>
+                                    <input placeholder="Confirm Password" name="confirm_new_password" type="password"
+                                        class="form-control" id="confirmNewPassword" required>
                                 </div>
                                 <button type="submit" class="btn btn-light mt-3">Change</button>
-                                <p class="text-danger" id="error-message" style="display: none;">Password change failed</p>
+                                <p class="text-danger" id="error-message" style="display: none;">Password change failed
+                                </p>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!--Delete account modal-->
+        <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                        <div class="myform bg-dark">
+                            <h1 class="text-center" style="color: red;">Delete Account</h1>
+
+                            <form method="post" action="/delete_account_process">
+                                <input name="confirm_delete" type="hidden" value="yes">
+                                <div class="mb-3 mt-4">
+                                    <label for="passwordDelete" class="form-label">Password</label>
+                                    <input name="password" type="password" class="form-control" id="passwordDelete"
+                                        placeholder="Enter your password" required>
+                                </div>
+                                <button type="submit" class="btn btn-light mt-3">Confirm Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <!--Dashboard-->
         <div id="page-content-wrapper">
@@ -149,41 +193,53 @@
                     <div class="e-profile">
                         <div class="row">
                             <div class="col text-sm-left mb-3 text-center">
-                                    <img src="{{ url_for('static', filename='img/Ejvind.png') }}" alt="Profile Picture"
-                                        class="profile-img">
-                                    <h4>{{account[3]}}</h4>
-                                    <h5>@{{account[1]}}</h5>
+                                <img src="{{ url_for('static', filename='img/Ejvind.png') }}" alt="Profile Picture"
+                                    class="profile-img">
+                                <h4>{{account[3]}}</h4>
+                                <h5>@{{account[1]}}</h5>
                             </div>
                         </div>
                         <div class="tab-content pt-3">
                             <div class="tab-pane active">
-                                <form class="form" method="POST" action="{{ url_for('update_profile') }}" novalidate="">
+                                <form class="form" method="POST" action="{{ url_for('update_profile_process') }}"
+                                    novalidate="">
                                     <div class="form-group">
+                                        <a href="#" class="btn btn-link" data-bs-toggle="modal"
+                                            data-bs-target="#changeNameModal">Change</a>
                                         <label for="name">Name</label>
                                         <input id="name" class="form-control" type="text" value="{{ account[3] }}"
                                             disabled>
-                                        <a href="#" class="btn btn-link" data-bs-toggle="modal"data-bs-target="#changeNameModal">Change</a>
                                     </div>
 
                                     <div class="form-group">
+                                        <a href="#" class="btn btn-link" data-bs-toggle="modal"
+                                            data-bs-target="#changeNumberModal">Change</a>
                                         <label for="phone">Phone Number</label>
                                         <input id="phone" class="form-control" type="text" value="{{ account[5] }}"
                                             disabled>
-                                        <a href="#" class="btn btn-link" data-bs-toggle="modal"data-bs-target="#changeNumberModal">Change</a>
+
                                     </div>
 
                                     <div class="form-group">
+                                        <a href="#" class="btn btn-link" data-bs-toggle="modal"
+                                            data-bs-target="#changePasswordModal">Change</a>
                                         <label for="password">Password</label>
                                         <input id="password" class="form-control" type="password"
                                             value="{{ account[2] }}" disabled>
-                                        <a href="#" class="btn btn-link" data-bs-toggle="modal"data-bs-target="#changePasswordModal">Change</a>
+
                                     </div>
 
-
-                                    <div class="form-group text-center">
-                                        <small class="text-muted">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date Joined: 2024-10-12</small>
-                                    </div>
                                 </form>
+
+                                <div align="center">
+                                    <button type="button" class="delete-btn" data-bs-toggle="modal"
+                                        data-bs-target="#deleteAccountModal">Delete Account</button>
+                                </div>
+
+                                <div class="form-group text-center">
+                                    <br>
+                                    <small align="center" class="text-muted"> Date Joined: {{ account[6] }}</small>
+                                </div>
                             </div>
                         </div>
                     </div>

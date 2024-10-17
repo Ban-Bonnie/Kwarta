@@ -16,53 +16,59 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-transparent py-4 px-4 shadow-sm">
         <div class="d-flex align-items-center">
             <!-- Back Button Icon with increased size and spacing -->
-            <i class="fas fa-peso-sign me-2"></i>Kwarta</div>
+            <i class="fas fa-peso-sign me-2"></i>Kwarta
+        </div>
         </div>
         <div class="ml-auto ms-auto d-flex align-items-center text-end nav-icon">
-            <i class="fas fa-bell primary-text navbar-icon me-3" id="notification-icon" title="Notifications" style="font-size: 1.5rem; cursor: pointer;"></i>
-            <i class="fas fa-user-circle primary-text navbar-icon" id="profile-icon" title="Profile" style="font-size: 1.5rem; cursor: pointer;"></i>
+            <i class="fas fa-bell primary-text navbar-icon me-3" id="notification-icon" title="Notifications"
+                style="font-size: 1.5rem; cursor: pointer;"></i>
+            <i class="fas fa-user-circle primary-text navbar-icon" id="profile-icon" title="Profile"
+                style="font-size: 1.5rem; cursor: pointer;"></i>
         </div>
     </nav>
-    
+
     <div style="background-color:ghostwhite;" class="container-fluid px-4 row px-2 justify-content-center">
         <div class="transac row my-5">
             <div class="col-md-12 d-flex justify-content-between align-items-center">
-                <a href="{{url_for('dashboard')}}"><i class="fas fa-solid fa-arrow-left-long primary-text" id="back" style="font-size: 1.5rem; margin-right: 15px; cursor: pointer;"></i></a>
+                <a href="{{url_for('dashboard')}}"><i class="fas fa-solid fa-arrow-left-long primary-text" id="back"
+                        style="font-size: 1.5rem; margin-right: 15px; cursor: pointer;"></i></a>
                 <h3 class="fs-2 m-3 text-center" style="flex-grow: 1;">Transaction History</h3>
-            </div>            
-            <div class="col">
-                <table class="table bg-white rounded shadow-sm table-hover">
+            </div>
+            <div class="col-12 d-flex justify-content-center">
+                <table class="table bg-white rounded shadow-sm table-hover mx-auto" style="width: 170vh;">
                     <thead>
-                        <tr>
-                            <th scope="col">Date</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Amount</th>
+                        <tr style="text-align: center;">
+                            <th style="width: 100px;" scope="col">Date</th>
                             <th scope="col">Type</th>
-                            <th scope="col">Transaction ID</th>
+                            <th scope="col">Payee</th>
+                            <th scope="col">Merchant</th>
+                            <th scope="col">Purchase</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">TXN</th>
                         </tr>
-
                     </thead>
                     <tbody>
                         {% for i in history[::-1] %}
-                        <tr>
-                            <th scope="row">{{i[0]}}</th><!-- date -->
-                            <td>{{i[1]}}</td> <!-- name -->
-                            {% if i[3] == "Game Topup" or i[3] == "Sent"
-                                or i[3] == "Bank Transfer" or i[3] == "Load" or i[3] == "Donated" %}
-                                <td style="color: red;"  >-{{ i[2] }}</td> <!-- amount colored red -->
+                        <tr style="text-align: center;">
+                            <td>{{ i[9] }}</td> <!-- date -->
+                            <td>{{ i[2] }}</td> <!-- type -->
+                            <td>{{ i[3] }}</td> <!-- Payee -->
+                            <td>{{ i[4] }}</td> <!-- Merchant -->
+                            <td>{{ i[5] }}</td> <!-- Purchase -->
+                            {% if i[2] == "Recharge" or i[2] == "Received" %}
+                            <td style="color:green;">+{{ i[8] }}</td> <!-- amount -->
                             {% else %}
-                                <td style="color: green;">+{{ i[2] }}</td> <!-- amount colored green -->
+                            <td style="color:red;">-{{ i[8] }}</td> <!-- amount -->
                             {% endif %}
-                            <td>{{i[3]}}</td> <!-- type -->
-                            <td>{{i[4]}}</td> <!-- transaction ID -->
+                            <td>{{ i[1] }}</td><!-- txn-->
                         </tr>
                         {% endfor %}
-                        <!-- Additional rows -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

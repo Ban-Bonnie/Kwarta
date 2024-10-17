@@ -10,7 +10,7 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='Bootstrap offiline/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='fontawesome/css/all.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='Homepage.css') }}"> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='Homepage.css') }}">
 </head>
 
 <body>
@@ -59,24 +59,30 @@
                     <div class="myform bg-dark">
                         <h1 class="text-center">LOGIN</h1>
 
-
                         <form method="post" action="/login_process">
                             <div class="mb-3 mt-4">
                                 <label for="exampleInputEmail1" class="form-label">Username</label>
-                                <input autocomplete="off" type="text" name="username" class="form-control" id="exampleInputEmail1"
-                                    aria-describedby="emailHelp" required>
+                                <input autocomplete="off" type="text" name="username" class="form-control"
+                                    id="exampleInputEmail1" aria-describedby="emailHelp" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="exampleInputPassword1" class="form-label">Password</label>
-                                <input type="password" name="password"  class="form-control" id="exampleInputPassword1" required>
+                                <input type="password" name="password" class="form-control" id="exampleInputPassword1"
+                                    required>
                             </div>
 
                             <button type="submit" class="btn btn-light mt-3">LOGIN</button>
-                            <p>&nbsp;Not a member?<br><a href="#" data-bs-toggle="modal" data-bs-target="#RegisterForm">
-                                    Sign Up now</a></p>
-                    
-                            <p>Incorrect Password</p> <!-- FLASH HERE -->
+                            <p>&nbsp;Not a member?<br><a href="#" data-bs-toggle="modal"
+                                    data-bs-target="#RegisterForm">Sign Up now</a></p>
+
+                            {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                            <div class="alert alert-danger mt-3" role="alert">
+                                {{ messages[0] }} <!-- Display flash message here -->
+                            </div>
+                            {% endif %}
+                            {% endwith %}
                         </form>
                     </div>
                 </div>
@@ -84,28 +90,45 @@
         </div>
     </div>
 
+    <script>
+        // Check if there's an alert with the class 'alert-danger' (which means an error occurred)
+        window.onload = function () {
+            if (document.querySelector('.alert-danger')) {
+                var myModal = new bootstrap.Modal(document.getElementById('LoginForm'), {});
+                myModal.show();  // Re-open the modal on page load if there is a flash message
+            }
+        }
+    </script>
+
+
+
+
     <!-- Register form modal -->
     <div class="modal fade" id="RegisterForm" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body">
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                     <div class="myform bg-dark">
                         <h1 class="text-center">REGISTER</h1>
 
                         <form method="post" action="/registration_process">
                             <div class="mb-3 mt-4">
                                 <label for="registerName" class="form-label">Full Name</label>
-                                <input name="name" type="text" class="form-control" id="registerName" autocomplete="off">
+                                <input name="name" type="text" class="form-control" id="registerName"
+                                    autocomplete="off">
                             </div>
                             <div class="mb-3">
                                 <label for="registerEmail" class="form-label">Username</label>
-                                <input autocomplete="off" name="username" type="text" class="form-control" id="registerEmail" aria-describedby="emailHelp">
+                                <input autocomplete="off" name="username" type="text" class="form-control"
+                                    id="registerEmail" aria-describedby="emailHelp">
                             </div>
                             <div class="mb-3">
                                 <label for="registerPhone" class="form-label">Phone Number</label>
-                                <input autocomplete="off" name="phone" type="tel" class="form-control" id="registerPhone" minlength="11" maxlength="11"
-                                    pattern="[0-9]{11}" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                <input autocomplete="off" name="phone" type="tel" class="form-control"
+                                    id="registerPhone" minlength="11" maxlength="11" pattern="[0-9]{11}" required
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                             </div>
                             <div class="mb-3">
                                 <label for="registerPassword" class="form-label">Password</label>
@@ -113,30 +136,34 @@
                             </div>
                             <div class="mb-3">
                                 <label for="registerConfirmPassword" class="form-label">Confirm Password</label>
-                                <input name="confirmPassword" type="password" class="form-control" id="registerConfirmPassword">
+                                <input name="confirmPassword" type="password" class="form-control"
+                                    id="registerConfirmPassword">
                             </div>
                             <button type="submit" class="btn btn-light mt-3">REGISTER</button>
-                            <p>&nbsp;Already a member?<br><a href="#" data-bs-toggle="modal" data-bs-target="#LoginForm">Login here</a></p>
+                            <p>&nbsp;Already a member?<br><a href="#" data-bs-toggle="modal"
+                                    data-bs-target="#LoginForm">Login here</a></p>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <!-- Small-screen-Modal -->
     <div class="modal" id="navbModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <img src="{{ url_for('static', filename='img/logobank.png') }}" alt="Logo">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="fa-regular fa-rectangle-xmark"></i></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i
+                            class="fa-regular fa-rectangle-xmark"></i></button>
                 </div>
                 <div class="modal-body">
                     <div class="modal-line"><i class="fa-solid fa-house"></i><a href="#intro">HOME</a></div>
                     <div class="modal-line"><i class="fa-solid fa-chalkboard"></i><a href="#About">ABOUT US</a></div>
                     <div class="modal-line"><i class="fa-solid fa-user"></i><a href="#faq">FAQ</a></div>
-                    <button type="button" class="nav-button" data-bs-toggle="modal" data-bs-target="#LoginForm">LOGIN</button>
+                    <button type="button" class="nav-button" data-bs-toggle="modal"
+                        data-bs-target="#LoginForm">LOGIN</button>
                 </div>
                 <div class="modal-footer">
                     <a target="_blank" href="#"><i class="fa-brands fa-facebook"></i></a>
@@ -147,7 +174,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Intro -->
     <div class="head-section">
         <div class="container" id="intro">
@@ -160,156 +187,162 @@
                         <p class="lead">
                             Your digital wallet for a smarter world. Experience freedom in every transaction.
                         </p>
-                        <button class="btn btn-primary px-5 py-3 mt-3 fs-5 fw-medium" type="button" data-bs-toggle="modal" data-bs-target="#RegisterForm">
+                        <button class="btn btn-primary px-5 py-3 mt-3 fs-5 fw-medium" type="button"
+                            data-bs-toggle="modal" data-bs-target="#RegisterForm">
                             Sign Up Now
                         </button>
                     </div>
                 </div>
                 <div class="col-12 col-md-6">
-                    <img src="{{ url_for('static', filename='img/smiling-man-using-wireless-devices.png') }}" class="img-fluid" alt="smiling-man-using-wireless-devices" />
+                    <img src="{{ url_for('static', filename='img/smiling-man-using-wireless-devices.png') }}"
+                        class="img-fluid" alt="smiling-man-using-wireless-devices" />
                 </div>
             </div>
         </div>
     </div>
-    
+
 
     <!--About-->
-<div class="About-container" id="About">
-    <div class="container">
-        <div class="row align-items-center gx-3 gy-5 py-5 mt-5">
-            <center>
-                <div class="col-12 col-md-12 text-center text-lg-start col-lg-7 About">
-                    <h2 class="fw-bold text-primary fs-1 pb-3">About E-Kwarta</h2>
-                    <p class="about-text">
-                        E-Kwarta is your convenient and secure e-wallet solution designed to simplify your digital
-                        transactions. With E-Kwarta, you can easily send and receive money, pay bills, purchase goods and services
-                        online, and manage your finances all in one place. Our user-friendly interface ensures that you can access your funds and perform transactions with just a few taps.
-                    </p>
-                    <p class="about-text">
-                        Our platform is built on robust security protocols to protect your data and ensure safe
-                        transactions. We aim to provide a seamless and hassle-free digital payment experience, empowering you to
-                        handle your finances effortlessly, whether at home or on the go.
-                        Join E-Kwarta today and experience the future of digital payments!
-                    </p>
-                    <button class="btn btn-primary px-5 py-3 mt-3 fs-5 fw-medium" type="button" data-bs-toggle="modal"
-                        data-bs-target="#RegisterForm">
-                        Sign Up Now
-                    </button>
-                </div>
-            </center>
-        </div>
-    </div>
-</div>
-
-<!--Review&FaQ -->
-<div class="Review" id="faq">
-    <div class="review container align-items-center">
-        <div class="faq row justify-content-center align-items-center gx- gy-5 py-3 text-center">
-            <h1>Frequently Asked Questions & Customer Testimonials</h1>
-            <div class="accordion" id="accordionExample">
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseTwo">
-                            What should I do if I have forgotten my online banking username?
+    <div class="About-container" id="About">
+        <div class="container">
+            <div class="row align-items-center gx-3 gy-5 py-5 mt-5">
+                <center>
+                    <div class="col-12 col-md-12 text-center text-lg-start col-lg-7 About">
+                        <h2 class="fw-bold text-primary fs-1 pb-3">About E-Kwarta</h2>
+                        <p class="about-text">
+                            E-Kwarta is your convenient and secure e-wallet solution designed to simplify your digital
+                            transactions. With E-Kwarta, you can easily send and receive money, pay bills, purchase
+                            goods and services
+                            online, and manage your finances all in one place. Our user-friendly interface ensures that
+                            you can access your funds and perform transactions with just a few taps.
+                        </p>
+                        <p class="about-text">
+                            Our platform is built on robust security protocols to protect your data and ensure safe
+                            transactions. We aim to provide a seamless and hassle-free digital payment experience,
+                            empowering you to
+                            handle your finances effortlessly, whether at home or on the go.
+                            Join E-Kwarta today and experience the future of digital payments!
+                        </p>
+                        <button class="btn btn-primary px-5 py-3 mt-3 fs-5 fw-medium" type="button"
+                            data-bs-toggle="modal" data-bs-target="#RegisterForm">
+                            Sign Up Now
                         </button>
-                    </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                            If you have forgotten your online banking username, click on the "Forgot Username?" link
-                            on the login page. You will be prompted to enter your registered email address or phone
-                            number, and you will receive instructions on how to recover your username.
-                        </div>
                     </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                            How can I transfer money to another account?
-                        </button>
-                    </h2>
-                    <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                            You can transfer money to another account through our online banking platform or mobile
-                            app. Simply navigate to the "Transfers" section, enter the recipient's account details,
-                            the amount you wish to send, and follow the prompts to complete the transaction.
-                        </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                            How do I update my personal information, such as my address or phone number?
-                        </button>
-                    </h2>
-                    <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                            To update your personal information, you can log in to your online banking account and
-                            navigate to the "Profile" or "Account Settings" section.
-                        </div>
-                    </div>
-                </div>
+                </center>
             </div>
         </div>
-        <!--reviews-->
-        <div class="row justify-content-center align-items-center gx-3 gy-5 py-3 text-center">
-            <div class="col-12">
-                <div class="row justify-content-center"> <!-- Center align the cards -->
-                    <div class="col-12 col-sm-4 mb-4 d-flex align-items-stretch">
-                        <div class="card testimonial-card">
-                            <div class="avatar mx-auto bg-white">
-                                <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(1).webp"
-                                    class="rounded-circle img-fluid" />
-                            </div>
-                            <div class="card-body">
-                                <h4 class="mb-4">Maria Smantha</h4>
-                                <hr />
-                                <p class="dark-grey-text mt-4">
-                                    <i class="fas fa-quote-left pe-2"></i>Impressive! It only took a week for my
-                                    transfer to go through. At least you’re not rushing things!
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-4 mb-4 d-flex align-items-stretch">
-                        <div class="card testimonial-card">
-                            <div class="avatar mx-auto bg-white">
-                                <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(2).webp"
-                                    class="rounded-circle img-fluid" />
-                            </div>
-                            <div class="card-body">
-                                <h4 class="mb-4">Lisa Cudrow</h4>
-                                <hr />
-                                <p class="dark-grey-text mt-4">
-                                    <i class="fas fa-quote-left pe-2"></i>Wow, your app is so advanced—it crashes
-                                    before I can even log in!
-                                </p>
+    </div>
+
+    <!--Review&FaQ -->
+    <div class="Review" id="faq">
+        <div class="review container align-items-center">
+            <div class="faq row justify-content-center align-items-center gx- gy-5 py-3 text-center">
+                <h1>Frequently Asked Questions & Customer Testimonials</h1>
+                <div class="accordion" id="accordionExample">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseTwo">
+                                What should I do if I have forgotten my online banking username?
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                If you have forgotten your online banking username, click on the "Forgot Username?" link
+                                on the login page. You will be prompted to enter your registered email address or phone
+                                number, and you will receive instructions on how to recover your username.
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-4 mb-4 d-flex align-items-stretch">
-                        <div class="card testimonial-card d-flex">
-                            <div class="avatar mx-auto bg-white">
-                                <img src="{{ url_for('static', filename='img/Ejvind.png') }}" class="rounded-circle img-fluid" alt="Ejvind">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                How can I transfer money to another account?
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                You can transfer money to another account through our online banking platform or mobile
+                                app. Simply navigate to the "Transfers" section, enter the recipient's account details,
+                                the amount you wish to send, and follow the prompts to complete the transaction.
                             </div>
-                            <div class="card-body">
-                                <h4 class="mb-4">Ejvind Gem Gimotea</h4>
-                                <hr />
-                                <p class="dark-grey-text mt-4">
-                                    <i class="fas fa-quote-left pe-2"></i>Super secure gid ang account ko, bisan ako
-                                    gani indi na makasulod.
-                                </p>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                How do I update my personal information, such as my address or phone number?
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                To update your personal information, you can log in to your online banking account and
+                                navigate to the "Profile" or "Account Settings" section.
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <!--reviews-->
+            <div class="row justify-content-center align-items-center gx-3 gy-5 py-3 text-center">
+                <div class="col-12">
+                    <div class="row justify-content-center"> <!-- Center align the cards -->
+                        <div class="col-12 col-sm-4 mb-4 d-flex align-items-stretch">
+                            <div class="card testimonial-card">
+                                <div class="avatar mx-auto bg-white">
+                                    <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(1).webp"
+                                        class="rounded-circle img-fluid" />
+                                </div>
+                                <div class="card-body">
+                                    <h4 class="mb-4">Maria Smantha</h4>
+                                    <hr />
+                                    <p class="dark-grey-text mt-4">
+                                        <i class="fas fa-quote-left pe-2"></i>Impressive! It only took a week for my
+                                        transfer to go through. At least you’re not rushing things!
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-4 mb-4 d-flex align-items-stretch">
+                            <div class="card testimonial-card">
+                                <div class="avatar mx-auto bg-white">
+                                    <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(2).webp"
+                                        class="rounded-circle img-fluid" />
+                                </div>
+                                <div class="card-body">
+                                    <h4 class="mb-4">Lisa Cudrow</h4>
+                                    <hr />
+                                    <p class="dark-grey-text mt-4">
+                                        <i class="fas fa-quote-left pe-2"></i>Wow, your app is so advanced—it crashes
+                                        before I can even log in!
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-4 mb-4 d-flex align-items-stretch">
+                            <div class="card testimonial-card d-flex">
+                                <div class="avatar mx-auto bg-white">
+                                    <img src="{{ url_for('static', filename='img/Ejvind.png') }}"
+                                        class="rounded-circle img-fluid" alt="Ejvind">
+                                </div>
+                                <div class="card-body">
+                                    <h4 class="mb-4">Ejvind Gem Gimotea</h4>
+                                    <hr />
+                                    <p class="dark-grey-text mt-4">
+                                        <i class="fas fa-quote-left pe-2"></i>Super secure gid ang account ko, bisan ako
+                                        gani indi na makasulod.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+        </div>
     </div>
-</div>
 
 
 
@@ -317,7 +350,7 @@
 
 
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='Bootstrap offiline/js/bootstrap.bundle.min.js') }}"></script>    
+    <script src="{{ url_for('static', filename='Bootstrap offiline/js/bootstrap.bundle.min.js') }}"></script>
 </body>
 
 </html>

@@ -1,7 +1,7 @@
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, url_for,flash
 from flask_mysqldb import MySQL
 from datetime import datetime
-import string, random
+import string, random, os
 
 class Kwarta:
     def __init__(self, name):
@@ -15,6 +15,7 @@ class Kwarta:
         self.app.config['MYSQL_USER'] = "root"
         self.app.config['MYSQL_PASSWORD'] = ""
         self.app.config['MYSQL_DB'] = "kwarta"
+        self.app.secret_key = os.urandom(24)
         
         self.mysql = MySQL(self.app)
 
@@ -24,7 +25,7 @@ class Kwarta:
         self.account = cursor.fetchone()
 
 
-        cursor.execute('SELECT * FROM transactions WHERE userId = %s', (self.account[0],))
+        cursor.execute('SELECT * FROM tbl_transactions WHERE userId = %s', (self.account[0],))
         self.historyTuple = cursor.fetchall()
         
 
@@ -38,54 +39,60 @@ class Kwarta:
         return txn_id
 
     def amountVerifier(self, amount):
-        if(float(amount)<=0):
-            print("Amount cannot be Zero or Negative.")
+        if(float(amount)<=0 or amount > self.account[4]):
+            print("Amount cannot be less than 1")
             return False
         else: return(True)
 
+    def feeCalculator(self,amount):
+        amount = float(amount)
+        fee = float(amount * 0.02 if amount < 5000 else 100)
+        return fee
 
-    def recordTransaction(self, senderName, recipientName, amount, transaction_type, senderId, recipientId):
-        txn = self.generate_unique_id()
+    def fetchDate (self):
         date = datetime.now().strftime('%Y-%m-%d')
+        return date
+    
+    def recordTransaction(self, type, sender, merchant, merchantID, purchase, rawAmount,fee):
+        txn = self.generate_unique_id()            #Generate transaction ID
+        date = self.fetchDate() #Fetch Current Date
+        userId = self.account[0]
+        rawAmount = float(rawAmount)
+        total_amount = rawAmount + fee
 
         cursor = self.mysql.connection.cursor()
-
-        if transaction_type == "Sent":
+        
+        standardType = ["Bank Transfer", "Game Topup", "Load","Donate", "Bills Payment"]
+        
+        if type in standardType:
+            print(type)
             cursor.execute(
-                "INSERT INTO transactions (date, name, amount, type, transactionid, userid) VALUES (%s, %s, %s, %s, %s, %s)",
-                (date, recipientName, amount, "Sent", txn, senderId)
-            )
+                "INSERT INTO tbl_transactions (userid, transaction_id, type, payee, merchant, purchase,amount,fee, total_amount,date)"
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                (userId, txn, type, sender, merchant, purchase, rawAmount, fee, total_amount, date))
+            self.mysql.connection.commit()
+            
+        elif type == "Send":
+            total_amount = fee+ rawAmount
+            cursor.execute(
+                "INSERT INTO tbl_transactions (userid, transaction_id, type, payee, merchant, purchase,amount,fee, total_amount,date)"
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                (userId, txn, "Sent", sender, merchant, purchase, rawAmount, fee, total_amount, date))
 
             cursor.execute(
-                "INSERT INTO transactions (date, name, amount, type, transactionid, userid) VALUES (%s, %s, %s, %s, %s, %s)",
-                (date, senderName, amount, "Received", txn, recipientId)
-            )
+                "INSERT INTO tbl_transactions (userid, transaction_id, type, payee, merchant, purchase,amount,fee, total_amount,date)"
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                (merchantID, txn, "Received", sender, merchant, purchase, rawAmount, 0, rawAmount, date))
             self.mysql.connection.commit()
 
-        elif transaction_type == "Recharge":
-            cursor.execute("INSERT INTO transactions VALUES(%s,%s,%s,%s,%s,%s)",
-                           (date,senderName,amount,"Recharge",txn,recipientId))
-            self.mysql.connection.commit()
-        
-        elif transaction_type == "Bank Transfer":
-            cursor.execute("INSERT INTO transactions VALUES(%s,%s,%s,%s,%s,%s)",
-                           (date, senderName,amount, "Bank Transfer", txn, recipientId))
-            self.mysql.connection.commit()
-        
-        elif transaction_type =="Game Topup":
-            cursor.execute("INSERT INTO transactions VALUES(%s,%s,%s,%s,%s,%s)",
-                           (date,senderName, amount, "Game Topup",txn,recipientId))
-            self.mysql.connection.commit()
-        
-        elif transaction_type == "Load":
-            cursor.execute("INSERT INTO transactions VALUES(%s,%s,%s,%s,%s,%s)",
-                           (date, senderName, amount, "Load", txn, recipientId))
+        elif type == "Recharge":
+            cursor.execute(
+                "INSERT INTO tbl_transactions (userid, transaction_id, type, payee, merchant, purchase,amount,fee, total_amount,date)"
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                (merchantID, txn, type, sender, merchant, purchase, rawAmount, fee, rawAmount, date))
             self.mysql.connection.commit()
 
-        elif transaction_type == "Donated":
-            cursor.execute("INSERT INTO transactions VALUES(%s,%s,%s,%s,%s,%s)",
-                           (date, recipientName, amount, "Donated", txn, recipientId))
-            self.mysql.connection.commit()
+        
 
         else:
             print("Transaction Type is not valid")
@@ -118,8 +125,6 @@ class Kwarta:
             cursor.close()
             return True
 
-
-
     def run(self):
         self.app.run(debug=True)
 
@@ -131,7 +136,6 @@ class Kwarta:
         @self.app.route("/dashboard")
         def dashboard():
             return render_template("dashboard.html", account=self.account, history=self.historyTuple)
-        
         
         @self.app.route("/transaction")
         def transaction():
@@ -153,12 +157,10 @@ class Kwarta:
         @self.app.route("/Donate")
         def Donate():
             return render_template("Donate.html")
-        
+
         @self.app.route("/Profile")
         def Profile():
             return render_template("Profile.html", account=self.account, history=self.historyTuple)
-
-
 
 
 
@@ -176,29 +178,28 @@ class Kwarta:
                 cursor.execute("SELECT * FROM accounts WHERE username = %s AND password = %s", (userBox, passBox))
                 account = cursor.fetchone()
 
+
                 
+
                 if account is None:
-                    print("Invalid username or password")
-                    cursor.close()
-                    return redirect(url_for("home"))
+                    cursor.execute("SELECT * FROM accounts WHERE username = %s ",(userBox,))
+                    user = cursor.fetchone()
+                    if user:
+                        flash("Incorrect password")
+                        cursor.close()
+                        return redirect(url_for("home") + "#LoginForm")  
+                    else:
+                        flash("User does not exist")
+                        cursor.close()
+                        return redirect(url_for("home") + "#LoginForm")  
 
-                # Debugging print statements (after checking account is not None)
-                print(account[1])
-                print(account[2])
-
-                
-                if account[1] != userBox or account[2] != passBox: 
-                    cursor.close()
-                    return redirect(url_for("home"))
-                
                 self.account = account
 
-                cursor.execute('SELECT * FROM transactions WHERE userid = %s', (self.account[0],))
+                cursor.execute('SELECT * FROM tbl_transactions WHERE userid = %s', (self.account[0],))
                 self.historyTuple = cursor.fetchall()
                 cursor.close()
-                
-                return render_template("dashboard.html", account=self.account, history=self.historyTuple)
 
+                return render_template("dashboard.html", account=self.account, history=self.historyTuple)
 
         @self.app.route("/registration_process", methods=['POST', 'GET'])
         def registration_process():
@@ -220,55 +221,14 @@ class Kwarta:
                     print('Password does not match')
                     return redirect("/")
                 
-                cursor.execute("INSERT INTO accounts(username, password, name, balance, phone) VALUES (%s, %s, %s, 0, %s)",
-                               (username, password, name, phone))
+                date = self.fetchDate()
+
+                cursor.execute("INSERT INTO accounts(username, password, name, balance, phone, date_joined) VALUES (%s, %s, %s, 0, %s,%s)",
+                               (username, password, name, phone, date))
                 self.mysql.connection.commit()
                 cursor.close()
                 print(f"Successfully registered user {username}")
                 return redirect("/")
-        
-
-
-        @self.app.route("/update_profile", methods=["POST"])
-        def update_profile():
-            if request.method == 'POST':
-                name = request.form.get("name")
-                username = request.form.get("username")
-                phone = request.form.get("phone")
-                current_password = request.form.get("current_password")
-                new_password = request.form.get("new_password")
-                confirm_password = request.form.get("confirm_password")
-
-                cursor = self.mysql.connection.cursor()
-
-
-                if current_password:
-                    cursor.execute("SELECT password FROM accounts WHERE userId = %s", (self.account[0],))
-                    db_password = cursor.fetchone()
-
-                    if db_password is None or db_password[0] != current_password:
-                        print("Current password is incorrect.", "error")
-                        cursor.close()
-                        return redirect(url_for("Profile"))
-
-
-                cursor.execute("""
-                    UPDATE accounts 
-                    SET name = %s, username = %s, phone = %s 
-                    WHERE userId = %s """, (name, username, phone, self.account[0]))
-
-
-                if new_password and new_password == confirm_password:
-                    cursor.execute("UPDATE accounts SET password = %s WHERE userId = %s", (new_password, self.account[0]))
-
-                self.mysql.connection.commit()
-                cursor.close()
-
-                print("Profile updated successfully!", "success")
-                self.refreshAccounts()
-                return redirect(url_for("Profile"))
-
-
 
 
 
@@ -278,6 +238,11 @@ class Kwarta:
                 receiver = request.form['receiver']                 
                 amount = request.form['amount']                
                 password = request.form['password']
+                
+                amount = float(amount)
+
+                fee = self.feeCalculator(amount)
+                print(f"total fee for send is {fee}")
             
 
                 #amount should not be negative or equal to 0
@@ -289,23 +254,27 @@ class Kwarta:
                     print("Insufficient Funds.")
                     return redirect(url_for('dashboard'))
 
-                #check if password matches
+                #check if password matches and fetch receiver's row from db
                 if password == self.account[2]: 
                     cursor = self.mysql.connection.cursor()
                     cursor.execute('SELECT * FROM accounts WHERE username = %s or phone = %s', (receiver,receiver))
                     receiver1 = cursor.fetchone()
 
-                    #Prevents user from sending to self 
+                    #Prevents user from sending to self
                     if receiver1 == self.account:
                         print("Cannot send to self")
                         return redirect(url_for("dashboard"))
 
                     if receiver and receiver1:
+                        #add balance to receiver
                         cursor.execute('UPDATE accounts SET balance = balance + %s WHERE username = %s ', (amount, receiver))
-                        cursor.execute('UPDATE accounts SET balance = balance - %s WHERE username = %s', (amount, self.account[1]))
+                        #deduct balance from sender
+                        cursor.execute('UPDATE accounts SET balance = balance - %s WHERE userid = %s', (amount+fee, self.account[0]))
                         self.mysql.connection.commit()
-                        self.recordTransaction(self.account[3], receiver1[3], amount, "Sent", self.account[0], receiver1[0])
-                        self.refreshAccounts()
+
+                        #record the transaction
+                        self.recordTransaction("Send", self.account[3], receiver1[3], receiver1[0], "Send Balance", amount,fee)
+                        
                         return redirect(url_for('dashboard'))
                     else:
                         print("User does not exist")
@@ -314,16 +283,16 @@ class Kwarta:
                     print("Incorrect password")    
                 return redirect(url_for('dashboard'))
 
-
-
         @self.app.route("/recharge_process", methods=["POST", "GET"])
         def recharge_process():
             if request.method=="POST":
-                amount = request.form["amount"]
+                amount = float(request.form["amount"])
                 name = request.form["name"]
+                fee = self.feeCalculator(amount)
 
                 #disable negative and 0 amounts
-                if self.amountVerifier(amount) == False:
+                if float(amount)<=0:
+                    print("amount cannot be less than 1")
                     return redirect(url_for("dashboard"))
 
                 cursor = self.mysql.connection.cursor()
@@ -331,32 +300,33 @@ class Kwarta:
                 self.mysql.connection.commit()
                 cursor.close()
 
-                self.recordTransaction(name,self.account[3],amount,"Recharge",self.account[0],self.account[0])
-
-                self.refreshAccounts()
+                self.recordTransaction("Recharge", name, self.account[3] , self.account[0], "Bank Recharge", amount, fee)
 
                 return redirect(url_for("dashboard"))
             
-
-
 
         @self.app.route("/bankTransfer_process", methods=["POST", "GET"])
         def bankTransfer_process():
             if request.method=="POST":
                 bank= request.form["bank"]
+                accountName = request.form["accountName"]
                 amount= float(request.form["amount"])
                 password = request.form["password"]
 
+                fee = self.feeCalculator(amount)
+
+                if (self.account[4] < amount+fee):
+                    print("not enough balance")
+                    return redirect(url_for('dashboard'))
+
                 if password == self.account[2]:
                     cursor = self.mysql.connection.cursor()
-                    cursor.execute("UPDATE accounts SET balance = balance - %s WHERE userid = %s",(amount,self.account[0]))
+                    cursor.execute("UPDATE accounts SET balance = balance - %s WHERE userid = %s",(amount+fee,self.account[0]))
                     self.mysql.connection.commit()
                     cursor.close()
 
-                    self.recordTransaction(bank,self.account[3],int(amount),"Bank Transfer", 0, self.account[0])
-                    self.refreshAccounts()
+                    self.recordTransaction("Bank Transfer", self.account[3], accountName ,self.account[0], "Bank Transfer", amount, fee)
                 else: print("Password does not match")
-                
                 return redirect("/dashboard")
             
 
@@ -368,18 +338,23 @@ class Kwarta:
                 if game == "minecraft":
                     email = request.form["email"]
                     package = request.form["package"]
-
+                   
                     price, Minecoins = package.split("|")
+                    fee = self.feeCalculator(price)
+
                     #data type conversions
                     price = float(price)
-                    currency = f"Minecraft {Minecoins} Minecoins"
+                    total = price+fee
+
+                    self.amountVerifier(price)
 
                     #Deduct Price
-                    if(self.withdraw(price, self.account)):
-                        print(f"Successfully withdrawn {price}")
-                        self.recordTransaction(currency,self.account[3],price,"Game Topup",0,self.account[0])
-                        self.refreshAccounts()
-                        print(email,price,currency)
+                    if(self.withdraw(total, self.account)):
+
+                        print(f"Successfully withdrawn {total}")
+                        self.recordTransaction("Game Topup", self.account[3], "Minecraft", self.account[0], f"{Minecoins} Minecoins", price, fee)
+                        
+                        print(email,price, Minecoins)
 
                     else: print(f"Failed to withdraw {price}")
 
@@ -392,15 +367,16 @@ class Kwarta:
                     
                     price, package = package.split("|")
                     price = float(price)
-                    
-                    if price == 280: currency= "Genshin Impact Welkin Moon"
-                    else: currency = f"Genshin Impact {package} Diamonds"
 
-                    if(self.withdraw(price, self.account)):
+                    if price != 280:
+                        package = f"{package} Diamonds"
+
+                    fee = self.feeCalculator(price)
+                    total = fee+price
+                    if(self.withdraw(total, self.account)):
                         print(f"Successfully withdrawn {price}")
-                        print(uid,server,price,currency)
-                        self.recordTransaction(currency,self.account[3],price,"Game Topup",0,self.account[0])
-                        self.refreshAccounts()
+                        print(uid,server,price, package)
+                        self.recordTransaction("Game Topup", self.account[3], "Genshin Impact", self.account[0], package, price, fee)
                     else: print(f"Failed to withdraw {price}")
 
 
@@ -410,34 +386,32 @@ class Kwarta:
                     
                     price, rp = price.split("|")  
                     price = float(price)
-                    
-                    currency = f"League of Legends {rp}RP"
-                    
 
-                    if(self.withdraw(price, self.account)):
-                        print(f"Successfully withdrawn {price}")
-                        self.recordTransaction(currency,self.account[3],price,"Game Topup",0,self.account[0])
-                        self.refreshAccounts()
-                        print(riotId,price,currency)
-                    else: print(f"Failed to withdraw {price}")
+                    fee = self.feeCalculator(price)
+                    total = fee+price
+                    if(self.withdraw(total, self.account)):
+                        print(f"Successfully withdrawn {total}")
+                        self.recordTransaction("Game Topup", self.account[3], "League of Legends", self.account[0], f"{rp} RP", price, fee)
+                        
+                        print(riotId,price)
+                    else: print(f"Failed to withdraw {total}")
                     
                                
                 elif game == "CODM":
                     playerID = request.form["playerId"]
                     price = request.form["codmOptions"]
-                    
 
-                    currency = f"CODM {price} Garena Shells"
                     price = float(price)
 
+                    fee = self.feeCalculator(price)
+                    total = fee+price
 
-                    if(self.withdraw(price, self.account)):
-                        print(f"Successfully withdrawn {price}")
-                        self.recordTransaction(currency,self.account[3],price,"Game Topup",0,self.account[0])
-                        self.refreshAccounts()
-                        print(playerID,price,currency)
+                    if(self.withdraw(total, self.account)):
+                        print(f"Successfully withdrawn {total}")
+                        self.recordTransaction("Game Topup", self.account[3], "Call of Duty Mobile", self.account[0], f"{float(price)} Garena Shellls", price, fee)
+                        print(playerID,price)
 
-                    else: print(f"Failed to withdraw {price}")
+                    else: print(f"Failed to withdraw {total}")
                     
              
                 elif game == "valorant":
@@ -447,18 +421,19 @@ class Kwarta:
                     price, currency = package.split("|")
 
                     price = float(price)
-                    currency = f"Valorant {currency}VP"
+                    fee = self.feeCalculator(price)
+                    total = fee+price
 
-                    if(self.withdraw(price, self.account)):
-                        print(f"Successfully withdrawn {price}")
-                        self.recordTransaction(currency,self.account[3],price,"Game Topup",0,self.account[0])
-                        self.refreshAccounts()
+                    if(self.withdraw(total, self.account)):
+                        print(f"Successfully withdrawn {total}")
+                        self.recordTransaction("Game Topup", self.account[3], "Minecraft", self.account[0], f"{currency} VP", price, fee)
+                        
                         print(playerID,price,currency)
 
-                    else: print(f"Failed to withdraw {price}")
+                    else: print(f"Failed to withdraw {total}")
                     
                     
-                return redirect(url_for("topup"))
+                return redirect(url_for("dashboard"))
         
         @self.app.route("/load_process", methods=["POST", "GET"])
         def load_process():
@@ -475,15 +450,17 @@ class Kwarta:
                 else:
                     return redirect(url_for('load_process'))
 
-                    
+                fee = 5
+                total = float(amount)+fee 
+
                 print(phoneNumber, provider, amount)
 
-                if self.withdraw(amount,self.account):
-                    #self.recordTransaction("")
+                if self.withdraw(total,self.account):
+                    self.recordTransaction("Load", self.account[3], phoneNumber, 0, f"{provider} {amount}", amount, fee)
                     print("Successful")
                 else: print("Failed")
 
-                self.recordTransaction(provider,phoneNumber,amount,"Load",0,self.account[0])
+                
 
             return redirect(url_for("dashboard"))
 
@@ -496,15 +473,170 @@ class Kwarta:
                 email = request.form["email"]
                 message = request.form["message"]
                 receiver = request.form["receiver"]
+                fee = 0 
+                amount = float(amount)
 
                 if(self.withdraw(amount,self.account)):
-                    self.recordTransaction(name,receiver,amount,"Donated",0,self.account[0])
+                    self.recordTransaction("Donate",self.account[3], receiver, 0,f"{receiver} Donation", amount, fee )
+
                 else:
                     print("You do not have enough balance")
                 
             return redirect(url_for("dashboard"))
 
+        @self.app.route("/pay_bills_process", methods = ["POST","GET"])
+        def pay_bills_process():
+            if request.method=="POST":
+                merchant = request.form["merchant"]
+                amount = float(request.form["amount"])
+                fee = self.feeCalculator(amount)
+                sender = self.account[3]
+                userid = self.account[0]
+                total = fee+amount
 
+                if merchant == "Electric Utility": 
+                    accountNumber = request.form["accountNumber"]
+                    provider = request.form["provider"]
+                    
+
+                    if self.withdraw(total, self.account):
+                        self.recordTransaction("Bills Payment",sender,provider, userid,"Electric Bill",amount,fee)
+                        print(f"successful {merchant} payment")
+                    else: print("Error with user balance")
+ 
+                elif merchant == "Healthcare":
+                    hospital = request.form["hospital"]
+                    patientID = request.form["patientID"]
+                    
+                    
+                    if self.withdraw(total, self.account):
+                        self.recordTransaction("Bills Payment",sender,hospital, userid,"Healthcare Bill",amount,fee)
+                        print(f"successful {merchant} payment")
+                    else: print("Error with user balance")
+   
+                elif merchant == "Telecom":
+                    accountNumber = request.form["accountNumber"]
+                    provider = request.form["provider"]
+                    
+                    
+                    if self.withdraw(total, self.account):
+                        self.recordTransaction("Bills Payment",sender,provider, userid,f"{merchant} Bill",amount,fee)
+                        print(f"successful {merchant} payment")
+                    else: print("Error with user balance")
+
+                elif merchant == "Credit Card":
+                        name = request.form["name"]
+                        cardNumber = request.form["cardNumber"]
+                        expiryDate = request.form["expiryDate"]
+                        cvv = request.form["cvv"]
+                        
+                        
+                        if self.withdraw(total, self.account):
+                            self.recordTransaction("Bills Payment",sender,cardNumber, userid,f"{merchant} Payment",amount,fee)
+                            print(f"successful {merchant} payment")
+                        else: print("Error with user balance")
+
+                elif merchant == "Water":
+                        name = request.form["name"]
+                        accountNumber = request.form["accountNumber"]
+               
+                        if self.withdraw(total, self.account):
+                            self.recordTransaction("Bills Payment",sender,name, userid,f"{merchant} Bill",amount,fee)
+                            print(f"successful {merchant} payment")
+                        else: print("Error with user balance")
+
+                elif merchant == "Internet":
+                        number = request.form["number"]
+                        name =request.form["name"]
+                        provider = request.form["provider"]
+                        
+                        if self.withdraw(total, self.account):
+                            self.recordTransaction("Bills Payment",sender,provider, userid,f"{merchant} Bill",amount,fee)
+                            print(f"successful {merchant} payment")
+                        else: print("Error with user balance")
+
+                elif merchant == "Loan":
+                    loanAccountNumber = request.form["loanAccountNumber"]
+                    name = request.form["name"]
+                    provider = request.form["provider"]
+
+                    if self.withdraw(total,self.account):
+                        self.recordTransaction("Bills Payment",sender,provider, userid,f"{merchant} Payment",amount,fee)
+                        print(f"successful {merchant} payment")
+                    else: print("Error with user balance")
+                
+                elif merchant == "Insurance":
+                    policyNumber = request.form["policyNumber"]
+                    name = request.form["name"]
+                    provider = request.form["provider"]
+
+                    if self.withdraw(total,self.account):
+                        self.recordTransaction("Bills Payment",sender,provider, userid,f"{merchant} Payment",amount,fee)
+                        print(f"successful {merchant} payment")
+                    else: print("Error with user balance")
+
+            return redirect(url_for('dashboard'))
+
+        @self.app.route("/update_profile_process", methods=["POST"])
+        def update_profile_process():
+            if request.method == 'POST':
+                update = request.form["update"]
+                userid = self.account[0]
+                user_pass = self.account[2]
+
+                cursor = self.mysql.connection.cursor()
+
+                if update == "changeName":
+                    newName= request.form["new_name"]
+                    password= request.form["password"]
+                    
+                    if password == user_pass:
+                        cursor.execute(("UPDATE accounts SET name = %s WHERE userId = %s;"),(newName, userid))
+                        self.mysql.connection.commit()
+                        print(f"Successfully changed name to {newName}")
+                    else: print("Incorrect password")
+                    
+                elif update == "changeNumber":
+                    new_phone_number= request.form["new_phone_number"]
+                    password= request.form["password"]
+                    
+                    if password == user_pass:
+                        cursor.execute(("UPDATE accounts SET phone = %s WHERE userId = %s;"),(new_phone_number, userid))
+                        self.mysql.connection.commit()
+                        print(f"Successfully changed phone number to {new_phone_number}")
+
+                    else: print("Password does not match")
+                
+                elif update == "changePassword":
+                    current_password= request.form["current_password"]
+                    new_password= request.form["new_password"]
+                    confirm_new_password= request.form["confirm_new_password"]
+ 
+                    if (user_pass == current_password) and (new_password == confirm_new_password):
+                        
+                        cursor.execute(("UPDATE accounts SET password = %s WHERE userId = %s;"),(new_password, userid))
+                        
+                        self.mysql.connection.commit()
+                        print(f"Successfully changed password to {new_password}")
+                cursor.close()
+                self.refreshAccounts()
+                return redirect(url_for("Profile"))
+
+        @self.app.route("/delete_account_process", methods=["GET", "POST"])
+        def delete_account_process():
+            if request.method == "POST":
+                password = request.form["password"]
+
+                if password == self.account[2]:
+                    cursor = self.mysql.connection.cursor()
+                    cursor.execute("DELETE FROM accounts WHERE userid = %s",(self.account[0],))
+                    cursor.execute("DELETE FROM tbl_transactions WHERE userid = %s",(self.account[0],))
+                    self.mysql.connection.commit()
+                    print(f"Goodbye {self.account[3]}")
+                    return redirect(url_for("home"))
+                else:
+                    print("Incorrect Password")
+                    return redirect(url_for("Profile"))
 
 # Object
 x = Kwarta(__name__) 
@@ -512,6 +644,7 @@ x.setup_route()
 x.run()
 
 
-#send username or number inputs
-#send more than balance
-#recent should be at top
+# make Load now button #009d63(main color)
+# make tables for transactions more pleasant
+# modals for success transactions (Game topup, Load, etc.)
+# also add confirmation modals ("you are sending __ amount to user ___, click to confirm")

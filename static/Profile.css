@@ -4,13 +4,11 @@ body {
     margin: 0;
     padding: 0;
 }
-
 .container {
     max-width: 1000px;
     margin: 30px auto;
     padding: 20px;
 }
-
 .card {
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -18,7 +16,6 @@ body {
     background-color: #fff;
     padding: 20px;
 }
-
 .card h4, .card h5 {
     color: #0e0e0e;
     margin-bottom: 5px;
@@ -26,19 +23,19 @@ body {
 
 .form-group {
     margin-bottom: 30px; /* Space between fields */
+    
 }
+
 
 .form-group label {
-    display: block; /* Ensure label is on top */
-    margin-bottom: 5px; /* Space below label */
+    display: block;
+    margin-bottom: 5px;
     font-weight: bold;
 }
-
 .form-group input {
     display: block; /* Ensure input takes full width */
     width: 100%; /* Full width for input */
 }
-
 .form-group a.btn-link {
     color: #007bff;
     text-decoration: none;
@@ -48,6 +45,7 @@ body {
 .form-group a.btn-link:hover {
     text-decoration: underline;
 }
+
 
 .profile-img {
     width: 100px;
@@ -66,7 +64,6 @@ body {
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
-
 .btn-primary:hover {
     background-color: #0056b3;
 }
@@ -74,17 +71,30 @@ body {
 .text-sm-left {
     color: #343a40;
 }
-
 .form {
     margin-top: 20px;
 }
-
 .row {
     display: flex;
     flex-wrap: wrap;
 }
-
 .col {
     flex: 1;
     margin-bottom: 15px;
+}
+
+
+.delete-btn {
+    background-color:crimson;      
+    color: white;               
+    border: none;               
+    padding: 10px 16px;          
+    font-size: 12px;            
+    cursor: pointer;
+    justify-content: ce;            
+}
+
+
+.delete-btn:hover {
+    background-color: darkred;  
 }
