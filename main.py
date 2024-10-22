@@ -1,7 +1,7 @@
 from flask import Flask, redirect, render_template, request, url_for,flash
 from flask_mysqldb import MySQL
 from datetime import datetime
-import string, random, os
+import string, random, os, math
 
 class Kwarta:
     def __init__(self, name):
@@ -46,59 +46,190 @@ class Kwarta:
 
     def feeCalculator(self,amount):
         amount = float(amount)
-        fee = float(amount * 0.02 if amount < 5000 else 100)
-        return fee
+        fee = float(amount * 0.02)
+        fee = math.ceil(fee)
+        return fee if fee >= 5 else 5
 
-    def fetchDate (self):
+    def fetchDate(self):
         date = datetime.now().strftime('%Y-%m-%d')
         return date
     
-    def recordTransaction(self, type, sender, merchant, merchantID, purchase, rawAmount,fee):
-        txn = self.generate_unique_id()            #Generate transaction ID
-        date = self.fetchDate() #Fetch Current Date
+    def increment_total_transaction(self,userId):
+        cursor = self.mysql.connection.cursor()
+        try:    
+            cursor.execute("UPDATE accounts SET total_transactions = total_transactions + 1 WHERE userId = %s;",
+                           (userId,))
+        except: print("Something went wrong")
+        self.mysql.connection.commit()
+        cursor.close()
+
+    def recordTransaction(self, type, sender, merchant, merchantID, purchase, rawAmount, fee):
+        txn = self.generate_unique_id()            # Generate transaction ID
+        date = self.fetchDate()                    # Fetch Current Date
         userId = self.account[0]
         rawAmount = float(rawAmount)
         total_amount = rawAmount + fee
 
         cursor = self.mysql.connection.cursor()
         
-        standardType = ["Bank Transfer", "Game Topup", "Load","Donate", "Bills Payment"]
+        try:
+            if type == "Bank Transfer":
+                cursor.execute(
+                    "INSERT INTO tbl_transactions (userid, txn, type, payee, merchant, purchase, amount, fee, total_amount, date) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    (userId, txn, type, sender, merchant, purchase, rawAmount, fee, total_amount, date))
+                self.increment_total_transaction(userId)
+                self.recordFees(type, fee)
+
+            elif type == "Game Topup":
+                cursor.execute(
+                    "INSERT INTO tbl_transactions (userid, txn, type, payee, merchant, purchase, amount, fee, total_amount, date) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    (userId, txn, type, sender, merchant, purchase, rawAmount, fee, total_amount, date))
+                self.increment_total_transaction(userId)
+                self.recordFees(type, fee)
+
+            elif type == "Load":
+                cursor.execute(
+                    "INSERT INTO tbl_transactions (userid, txn, type, payee, merchant, purchase, amount, fee, total_amount, date) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    (userId, txn, type, sender, merchant, purchase, rawAmount, fee, total_amount, date))
+                self.increment_total_transaction(userId)
+                self.recordFees(type, fee)
+
+            elif type == "Donate":
+                cursor.execute(
+                    "INSERT INTO tbl_transactions (userid, txn, type, payee, merchant, purchase, amount, fee, total_amount, date) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    (userId, txn, type, sender, merchant, purchase, rawAmount, fee, total_amount, date))
+                self.increment_total_transaction(userId)
+                self.recordFees(type, rawAmount)  # Use rawAmount for donations
+
+            elif type == "Bills Payment":
+                cursor.execute(
+                    "INSERT INTO tbl_transactions (userid, txn, type, payee, merchant, purchase, amount, fee, total_amount, date) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    (userId, txn, type, sender, merchant, purchase, rawAmount, fee, total_amount, date))
+                self.increment_total_transaction(userId)
+
+                self.recordFees(type, fee)
+
+            elif type == "Send":
+                total_amount = fee + rawAmount
+                cursor.execute(
+                    "INSERT INTO tbl_transactions (userid, txn, type, payee, merchant, purchase, amount, fee, total_amount, date) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    (userId, txn, "Send", sender, merchant, purchase, rawAmount, fee, total_amount, date))
+                
+                cursor.execute(
+                    "INSERT INTO tbl_transactions (userid, txn, type, payee, merchant, purchase, amount, fee, total_amount, date) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    (merchantID, txn, "Receive", sender, merchant, purchase, rawAmount, 0, rawAmount, date))
+
+                self.increment_total_transaction(userId)
+                self.recordFees(type, fee)
+
+            elif type == "Recharge":
+                cursor.execute(
+                    "INSERT INTO tbl_transactions (userid, txn, type, payee, merchant, purchase, amount, fee, total_amount, date) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    (merchantID, txn, type, sender, merchant, purchase, rawAmount, fee, rawAmount, date))
+                
+                self.increment_total_transaction(userId)
+                self.recordFees(type, fee)
+
+            else:
+                print("Transaction Type is not valid")
+                return  # Exit the method if the transaction type is invalid
+
+            self.recordTransactionCount(type,merchant,purchase)
+
+            self.refreshAccounts()
+
+            self.mysql.connection.commit()
+
+        except Exception as e:
+            self.mysql.connection.rollback()  # Rollback on error
+            print(f"An error occurred while recording the transaction: {e}")
         
-        if type in standardType:
-            print(type)
-            cursor.execute(
-                "INSERT INTO tbl_transactions (userid, transaction_id, type, payee, merchant, purchase,amount,fee, total_amount,date)"
-                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                (userId, txn, type, sender, merchant, purchase, rawAmount, fee, total_amount, date))
-            self.mysql.connection.commit()
-            
-        elif type == "Send":
-            total_amount = fee+ rawAmount
-            cursor.execute(
-                "INSERT INTO tbl_transactions (userid, transaction_id, type, payee, merchant, purchase,amount,fee, total_amount,date)"
-                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                (userId, txn, "Sent", sender, merchant, purchase, rawAmount, fee, total_amount, date))
 
-            cursor.execute(
-                "INSERT INTO tbl_transactions (userid, transaction_id, type, payee, merchant, purchase,amount,fee, total_amount,date)"
-                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                (merchantID, txn, "Received", sender, merchant, purchase, rawAmount, 0, rawAmount, date))
-            self.mysql.connection.commit()
+        finally:
+            cursor.close()  # Ensure cursor is closed regardless of success or error
 
-        elif type == "Recharge":
-            cursor.execute(
-                "INSERT INTO tbl_transactions (userid, transaction_id, type, payee, merchant, purchase,amount,fee, total_amount,date)"
-                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                (merchantID, txn, type, sender, merchant, purchase, rawAmount, fee, rawAmount, date))
-            self.mysql.connection.commit()
-
-        
+    def recordFees(self, type, amount):
+        cursor = self.mysql.connection.cursor()
+        if type == "Donate":
+            try:
+                #add fee revenue to record
+                cursor.execute("UPDATE admin_dashboard SET amount = amount + %s WHERE id = %s;",(amount,2))
+                #add transaction count for this type of transaction
+                cursor.execute("UPDATE service_revenue SET total_transactions = total_transactions + 1 WHERE name = %s",
+                               (type,))
+                
+                self.mysql.connection.commit()
+            except Exception as e:
+                print(f"An error in type Donate  occurred: {e}")
 
         else:
-            print("Transaction Type is not valid")
-
-        self.refreshAccounts()
+            print(f"attempt to update revenues for {type}")
+            try:
+                #add fee revenue to record of this type
+                cursor.execute("UPDATE service_revenue SET total_revenue = total_revenue + %s WHERE name = %s", (amount, type))
+                #add fee revenue to overall record 
+                cursor.execute("UPDATE admin_dashboard SET amount = amount + %s WHERE id = %s",(amount,1))
+                #add transaction count for this type of transaction 
+                cursor.execute("UPDATE service_revenue SET total_transactions = total_transactions + 1 WHERE name = %s",
+                               (type,))
+                self.mysql.connection.commit()
+            except Exception as e:
+                
+                print(f"An error occurred in incurring fees for {type}: {e}")
         cursor.close()
+
+    def recordTransactionCount(self, type, merchant, purchase):
+        cursor = self.mysql.connection.cursor()
+        if type == 'Bills Payment':
+            try:
+                print(f"the name is {purchase}")
+                cursor.execute("UPDATE transaction_count SET transactions = transactions + 1 WHERE name = %s",
+                                (purchase,))
+                self.mysql.connection.commit()
+
+            except Exception as e:
+                print(f"Error recording count for Bills: {e}")
+        
+        elif type == "Game Topup":
+            try:
+                print(f"the name is {merchant}")
+                cursor.execute("UPDATE transaction_count SET transactions = transactions + 1 WHERE name = %s",
+                                (merchant,))
+                self.mysql.connection.commit()
+
+            except Exception as e:
+                print(f"Error recording count for Game: {e}")
+        
+        elif type == "Load":
+            try:
+                print(f"the name is {merchant}")
+                cursor.execute("UPDATE transaction_count SET transactions = transactions + 1 WHERE name = %s",
+                                (merchant,))
+                self.mysql.connection.commit()
+
+            except Exception as e:
+                print(f"Error recording count for Load: {e}")
+
+        elif type == "Donate":
+            try:
+                print(f"the name is {merchant}")
+                cursor.execute("UPDATE transaction_count SET transactions = transactions + 1 WHERE name = %s",
+                                (merchant,))
+                self.mysql.connection.commit()
+
+            except Exception as e:
+                print(f"Error recording count for Donate: {e}")
+
+        else:
+            print("Else Block reached for Record Transaction Count")
 
     def deposit(self, price, user):
         price = float(price)
@@ -124,6 +255,51 @@ class Kwarta:
             self.mysql.connection.commit()
             cursor.close()
             return True
+
+    def createAgingAccountData(self,userid):
+        cursor = self.mysql.connection.cursor()
+        try:
+            cursor.execute("INSERT INTO aging_accounts (userid,last_login_date, days_offline) VALUES(%s,%s,0)",(userid,self.fetchDate))
+            self.mysql.connection.commit()
+            print("Successfully created aging account data for user")
+        except Exception as e:
+            print(f"Error creating data for userid {userid} : {e}")
+        cursor.close()
+
+    def record_user_login(self, userid):
+        date = self.fetchDate()
+        cursor = self.mysql.connection.cursor()
+        cursor.execute("UPDATE aging_accounts SET last_login_date = %s WHERE userid = %s",(date,userid))
+        self.mysql.connection.commit()
+        cursor.close()
+
+    def updateAgingAccounts(self,userid):
+        dateNow = self.fetchDate()
+        print(f"date now is {dateNow}")
+        cursor = self.mysql.connection.cursor()
+        cursor.execute("SELECT * FROM aging_accounts")
+        accountsTuple =  cursor.fetchall()
+
+        for i in accountsTuple:
+            tupleUserId = i[0]
+            tupleUserLastLoginDate= i[1]
+            
+
+            if tupleUserId == userid:
+                cursor.execute("UPDATE aging_accounts SET days_offline = 0 WHERE userid = %s",(userid,))
+
+            else:
+                try:
+                    #Get Difference of Date now from last login fate
+                    cursor.execute("SELECT DATEDIFF(%s, last_login_date) AS days_offline FROM aging_accounts WHERE userid = %s;",(dateNow,tupleUserId))
+                    daysOffline = cursor.fetchone()
+                    print(f"user's current days offline {daysOffline}")
+
+                    cursor.execute("UPDATE aging_accounts SET days_offline = %s WHERE userid = %s;",
+                                    (daysOffline,tupleUserId))
+                    self.mysql.connection.commit()
+                except Exception as e:
+                    print(f"Error setting days offline for user {tupleUserId}")
 
     def run(self):
         self.app.run(debug=True)
@@ -177,13 +353,18 @@ class Kwarta:
                 # Fetch the account based on username and password
                 cursor.execute("SELECT * FROM accounts WHERE username = %s AND password = %s", (userBox, passBox))
                 account = cursor.fetchone()
-
-
-                
-
+     
                 if account is None:
+                    #try admin login
+                    cursor.execute("SELECT * FROM admin_accounts WHERE username = %s AND password = %s",(userBox, passBox))
+                    isAdmin = cursor.fetchone()
+
+                    if isAdmin:
+                        return("<h1>Hello Admin!!</h1>")
+
                     cursor.execute("SELECT * FROM accounts WHERE username = %s ",(userBox,))
                     user = cursor.fetchone()
+
                     if user:
                         flash("Incorrect password")
                         cursor.close()
@@ -192,14 +373,22 @@ class Kwarta:
                         flash("User does not exist")
                         cursor.close()
                         return redirect(url_for("home") + "#LoginForm")  
+                else:
+                    #Saving user data in backend
+                    self.account = account
 
-                self.account = account
+                    #Saving user transactions in backend
+                    cursor.execute('SELECT * FROM tbl_transactions WHERE userid = %s', (self.account[0],))
+                    self.historyTuple = cursor.fetchall()
+                    cursor.close()
 
-                cursor.execute('SELECT * FROM tbl_transactions WHERE userid = %s', (self.account[0],))
-                self.historyTuple = cursor.fetchall()
-                cursor.close()
+                    #add user login record to db
+                    self.record_user_login(self.account[0])
 
-                return render_template("dashboard.html", account=self.account, history=self.historyTuple)
+                    #update aging accounts here
+                    self.updateAgingAccounts(self.account[0])
+                    
+                    return render_template("dashboard.html", account=self.account, history=self.historyTuple)
 
         @self.app.route("/registration_process", methods=['POST', 'GET'])
         def registration_process():
@@ -210,6 +399,7 @@ class Kwarta:
                 password = request.form["password"]
                 confirmPassword = request.form["confirmPassword"]
 
+                #flags to check if account credential validity
                 cursor = self.mysql.connection.cursor()
                 cursor.execute('SELECT username FROM accounts WHERE username = %s', (username,))
                 userExists = cursor.fetchone()
@@ -221,16 +411,21 @@ class Kwarta:
                     print('Password does not match')
                     return redirect("/")
                 
+                #registering account to accounts table
                 date = self.fetchDate()
-
                 cursor.execute("INSERT INTO accounts(username, password, name, balance, phone, date_joined) VALUES (%s, %s, %s, 0, %s,%s)",
                                (username, password, name, phone, date))
                 self.mysql.connection.commit()
-                cursor.close()
+                
+                #Fetching user's id            
+                cursor.execute("SELECT userid FROM accounts WHERE username = %s",(username,))
+                userId = cursor.fetchone()
+                print(f"newly registered account's user ID is {userId}")
+                self.createAgingAccountData(userId)
+
                 print(f"Successfully registered user {username}")
+                cursor.close()
                 return redirect("/")
-
-
 
         @self.app.route('/send_process', methods=['POST', 'GET'])
         def send():
@@ -303,7 +498,6 @@ class Kwarta:
                 self.recordTransaction("Recharge", name, self.account[3] , self.account[0], "Bank Recharge", amount, fee)
 
                 return redirect(url_for("dashboard"))
-            
 
         @self.app.route("/bankTransfer_process", methods=["POST", "GET"])
         def bankTransfer_process():
@@ -329,7 +523,6 @@ class Kwarta:
                 else: print("Password does not match")
                 return redirect("/dashboard")
             
-
         @self.app.route("/gameTopup_process", methods=["POST", "GET"])
         def gameTopup_process():
             if request.method=="POST":
@@ -408,7 +601,7 @@ class Kwarta:
 
                     if(self.withdraw(total, self.account)):
                         print(f"Successfully withdrawn {total}")
-                        self.recordTransaction("Game Topup", self.account[3], "Call of Duty Mobile", self.account[0], f"{float(price)} Garena Shellls", price, fee)
+                        self.recordTransaction("Game Topup", self.account[3], "Call of Duty Mobile", self.account[0], f"{int(price)} Garena Shellls", price, fee)
                         print(playerID,price)
 
                     else: print(f"Failed to withdraw {total}")
@@ -426,7 +619,7 @@ class Kwarta:
 
                     if(self.withdraw(total, self.account)):
                         print(f"Successfully withdrawn {total}")
-                        self.recordTransaction("Game Topup", self.account[3], "Minecraft", self.account[0], f"{currency} VP", price, fee)
+                        self.recordTransaction("Game Topup", self.account[3], "Valorant", self.account[0], f"{currency} VP", price, fee)
                         
                         print(playerID,price,currency)
 
@@ -456,7 +649,7 @@ class Kwarta:
                 print(phoneNumber, provider, amount)
 
                 if self.withdraw(total,self.account):
-                    self.recordTransaction("Load", self.account[3], phoneNumber, 0, f"{provider} {amount}", amount, fee)
+                    self.recordTransaction("Load", self.account[3], provider, 0, f"{provider} {amount}", amount, fee)
                     print("Successful")
                 else: print("Failed")
 
@@ -466,7 +659,6 @@ class Kwarta:
 
         @self.app.route("/donate_process", methods=["POST", "GET"])
         def donate_process():
-            print("Donatee")
             if request.method == "POST":
                 name = request.form["name"]
                 amount = request.form["amount"]
@@ -477,7 +669,7 @@ class Kwarta:
                 amount = float(amount)
 
                 if(self.withdraw(amount,self.account)):
-                    self.recordTransaction("Donate",self.account[3], receiver, 0,f"{receiver} Donation", amount, fee )
+                    self.recordTransaction("Donate",self.account[3], receiver, 0,"Donation", amount, fee )
 
                 else:
                     print("You do not have enough balance")
@@ -592,6 +784,7 @@ class Kwarta:
                     
                     if password == user_pass:
                         cursor.execute(("UPDATE accounts SET name = %s WHERE userId = %s;"),(newName, userid))
+                        cursor.execute(("UPDATE tbl_transactions SET payee = %s WHERE userId = %s AND payee = %s;"),(newName, userid,self.account[3]))
                         self.mysql.connection.commit()
                         print(f"Successfully changed name to {newName}")
                     else: print("Incorrect password")
@@ -629,8 +822,8 @@ class Kwarta:
 
                 if password == self.account[2]:
                     cursor = self.mysql.connection.cursor()
+                    cursor.execute("DELETE FROM aging_accounts WHERE userid = %s",(self.account[0],))
                     cursor.execute("DELETE FROM accounts WHERE userid = %s",(self.account[0],))
-                    cursor.execute("DELETE FROM tbl_transactions WHERE userid = %s",(self.account[0],))
                     self.mysql.connection.commit()
                     print(f"Goodbye {self.account[3]}")
                     return redirect(url_for("home"))
@@ -645,6 +838,5 @@ x.run()
 
 
 # make Load now button #009d63(main color)
-# make tables for transactions more pleasant
 # modals for success transactions (Game topup, Load, etc.)
 # also add confirmation modals ("you are sending __ amount to user ___, click to confirm")
