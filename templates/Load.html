@@ -63,18 +63,22 @@
                     <input type="radio" name="provider" value="Globe" class="provider-radio" aria-labelledby="globe-label" />
                     <img src="{{ url_for('static', filename='img/Globe.png') }}" alt="Globe" class="provider-logo" id="globe-label">
                 </label>
+
                 <label class="provider-option">
                     <input type="radio" name="provider" value="TM" class="provider-radio" aria-labelledby="tm-label" />
                     <img src="{{ url_for('static', filename='img/TM.png') }}" alt="TM" class="provider-logo" id="tm-label">
                 </label>
+
                 <label class="provider-option">
                     <input type="radio" name="provider" value="Smart" class="provider-radio" aria-labelledby="smart-label" />
                     <img src="{{ url_for('static', filename='img/Smart.png') }}" alt="Smart" class="provider-logo" id="smart-label">
                 </label>
+
                 <label class="provider-option">
                     <input type="radio" name="provider" value="TNT" class="provider-radio" aria-labelledby="tnt-label" />
                     <img src="{{ url_for('static', filename='img/tnt.png') }}" alt="TNT" class="provider-logo" id="tnt-label">
                 </label>
+                
                 <label class="provider-option">
                     <input type="radio" name="provider" value="DITO" class="provider-radio" aria-labelledby="dito-label" />
                     <img src="{{ url_for('static', filename='img/Dito.png') }}" alt="DITO" class="provider-logo" id="dito-label">
@@ -83,7 +87,8 @@
     
             <div class="mb-3">
                 <label for="phoneNumber" class="form-label">Buy load for</label>
-                <input name="phoneNumber" type="tel" class="form-control" id="phoneNumber" placeholder="+63 XXXXXXXXXX" required>
+                <input name="phoneNumber" type="tel" class="form-control" id="phoneNumber" placeholder="+63 XXXXXXXXXX" minlength="11" 
+                maxlength="11" pattern="[0-9]{11}" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
             </div>
     
             <div class="amount-buttons">

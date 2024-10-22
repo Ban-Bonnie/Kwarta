@@ -39,32 +39,30 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-body">
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                         <div class="myform bg-dark">
                             <h1 class="text-center">Send to any Kwarta account</h1>
-
+        
                             <!-- SEND FORM -->
                             <form method='post' action="/send_process">
                                 <div class="mb-3 mt-4">
                                     <label for="InputSendTo" class="form-label">Send to</label>
-                                    <input name="receiver" autocomplete="off" type="text" class="form-control"
-                                        id="InputSendTo" aria-describedby="emailHelp"
-                                        placeholder="User or Phone Number">
+                                    <input name="receiver" autocomplete="off" type="text" class="form-control" id="InputSendTo" aria-describedby="emailHelp" placeholder="Username or Phone Number">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="InputAmount" class="form-label">Amount</label>
+                                    <label if="feeDisplay" for="InputAmount" class="form-label">Amount</label>
+                                    
                                     <div class="input-group bg-dark">
                                         <span class="input-group-text">₱</span>
-                                        <input name="amount" autocomplete="off" type="number" step="0.01"
-                                            class="form-control" id="InputAmount" placeholder="Enter amount" required>
+                                        <input name="amount" autocomplete="off" type="number" step="0.01" class="form-control" id="InputAmount" placeholder="Enter amount" required>
                                     </div>
+                                    
                                 </div>
                                 <div class="mb-3">
                                     <label for="exampleInputPassword1" class="form-label">Password</label>
-                                    <input name="password" type="password" class="form-control"
-                                        id="exampleInputPassword1">
+                                    <input name="password" type="password" class="form-control" id="exampleInputPassword1">
                                 </div>
+                                <p id="feeDisplay" class="text-light mt-1">Fee: ₱5.00</p>
                                 <button type="submit" class="btn btn-light mt-3">SEND</button>
                                 <p>Incorrect Password</p>
                             </form>
@@ -73,6 +71,7 @@
                 </div>
             </div>
         </div>
+        
 
         <!--Recharge-->
         <div class="modal fade" id="rechargeForm" tabindex="-1" aria-labelledby="ModalFormLabel" aria-hidden="true">
@@ -156,58 +155,52 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-body">
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                         <div class="myform bg-dark">
-                            <h1 class="text-center">Bank Transfer</h1>
+                            <h1 class="text-center">Bank</h1>
                             <form method="post" action="bankTransfer_process">
                                 <div class="mb-3">
-                                    <select name="bank" class="form-select" id="bankOption"
-                                        onchange="toggleBankFields()" required>
+                                    <select name="bank" class="form-select" id="bankOption" onchange="toggleBankFields()" required>
                                         <option value="" disabled selected>Select Bank</option>
                                         <option value="China Bank">China Bank</option>
                                     </select>
                                 </div>
-
+        
                                 <div id="bankField" style="display: none;">
                                     <div class="mb-3 mt-4">
-                                        <label required for="InputAccname" class="form-label">Account Name</label>
-                                        <input name="accountName" type="text" class="form-control" id="InputSendTo"
-                                            aria-describedby="emailHelp" placeholder="Account Name">
+                                        <label for="InputAccname" class="form-label">Account Name</label>
+                                        <input name="accountName" type="text" class="form-control" id="InputSendTo" aria-describedby="emailHelp" placeholder="Account Name" required>
                                     </div>
                                     <div class="mb-3 mt-4">
-                                        <label name="accountNumber" for="InputAccno" class="form-label">Card
-                                            Number</label>
-                                        <input type="text" class="form-control" id="InputSendTo"
-                                            aria-describedby="emailHelp" placeholder="1234 5678 435678"
-                                            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 14);">
+                                        <label for="InputAccno" class="form-label">Card Number</label>
+                                        <input type="text" class="form-control" id="InputSendTo" aria-describedby="emailHelp" placeholder="1234 5678 435678"
+                                            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 14);" required>
                                     </div>
-
-
-
+        
                                     <div class="mb-3">
                                         <label for="InputAmount" class="form-label">Amount</label>
                                         <div class="input-group bg-dark">
                                             <span class="input-group-text">₱</span>
-                                            <input name="amount" type="number" class="form-control" id="InputAmount"
-                                                placeholder="Enter amount" required
-                                                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                            <input name="amount" type="number" class="form-control" id="BankInputAmount" placeholder="Enter amount" required>
                                         </div>
+                                        <!-- Fee display for the bank form -->
+                                        <p id="bankFeeDisplay" class="text-light mt-2">Fee: ₱5.00</p>
                                     </div>
+        
                                     <div class="mb-3">
-                                        <label required for="exampleInputPassword1" class="form-label">Password</label>
-                                        <input name="password" type="password" class="form-control"
-                                            id="exampleInputPassword1">
+                                        <label for="exampleInputPassword1" class="form-label">Password</label>
+                                        <input name="password" type="password" class="form-control" id="exampleInputPassword1" required>
                                     </div>
                                 </div>
+        
                                 <button type="submit" class="btn btn-light mt-3">SEND</button>
-                                <p>Incorrect Password</p>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        
 
         <!--Loan Modal-->
         <div class="modal fade" id="notAvailableModal" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
@@ -449,7 +442,7 @@
                         </div>
                         <div class="col-3 mx-2 d-flex justify-content-center">
                             <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#BankForm">
-                                <i class="fa-solid fa-university icon-lg"></i>Bank
+                                <i class="fa-solid fa-university icon-lg"></i>Bank Transfer
                             </button>
                         </div>
                         <div class="col-3 mx-2 d-flex justify-content-center">
@@ -517,7 +510,7 @@
                                         <th scope="col">Type</th>
                                         <th scope="col">Payee</th>
                                         <th scope="col">Merchant</th>
-                                        <th scope="col">Purchase</th>
+                                        <th scope="col">Transaction</th>
                                         <th scope="col">Amount</th>
                                     </tr>
                                 </thead>
@@ -531,7 +524,7 @@
                                         <td>{{ i[4] }}</td> <!-- Merchant -->
                                         <td>{{ i[5] }}</td> <!-- Purchase -->
                                         {% if i[2] == "Recharge" or i[2] == "Received" %}
-                                        <td style="color:green ;">+{{ i[8] }}</td> <!-- amount -->
+                                        <td style="color:green;">+{{ i[8] }}</td> <!-- amount -->
                                         {% else %}
                                         <td style="color:red ;">-{{ i[8] }}</td> <!-- amount -->
                                         {% endif %}
@@ -552,6 +545,39 @@
         </div>
     </div>
     <!-- /#page-content-wrapper -->
+
+    <script>
+        // Function to calculate the fee based on the amount
+        function calculateFee(amount) {
+            let fee = Math.ceil(amount * 0.02);
+            return fee >= 5 ? fee : 5;
+        }
+    
+        // Event listener for the Send form (already existing)
+        document.getElementById('InputAmount').addEventListener('input', function() {
+            let amount = parseFloat(this.value) || 0;
+            let fee = calculateFee(amount);
+            document.getElementById('feeDisplay').textContent = `Fee: ₱${fee.toFixed(2)}`;
+        });
+    
+        // Event listener for the Bank form
+        document.getElementById('BankInputAmount').addEventListener('input', function() {
+            let amount = parseFloat(this.value) || 0;
+            let fee = calculateFee(amount);
+            document.getElementById('bankFeeDisplay').textContent = `Fee: ₱${fee.toFixed(2)}`;
+        });
+    
+        // Function to toggle the Bank fields visibility
+        function toggleBankFields() {
+            let bankField = document.getElementById('bankField');
+            let selectedBank = document.getElementById('bankOption').value;
+            if (selectedBank) {
+                bankField.style.display = 'block';
+            } else {
+                bankField.style.display = 'none';
+            }
+        }
+    </script>
 
 
     <script src="{{url_for('static', filename='Bootstrap offiline/js/bootstrap.bundle.min.js')}}"></script>
