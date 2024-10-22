@@ -39,7 +39,7 @@ class Kwarta:
         return txn_id
 
     def amountVerifier(self, amount):
-        if(float(amount)<=0 or amount > self.account[4]):
+        if(float(amount)<=0):
             print("Amount cannot be less than 1")
             return False
         else: return(True)
@@ -115,10 +115,11 @@ class Kwarta:
 
         cursor = self.mysql.connection.cursor()
         if(user[4]<price):
+            flash('Insufficient Funds.', 'danger')#alert
             print("Insufficient balance")
             return False
         else:
-            
+            flash('Purchased from:', 'success')
             cursor.execute("UPDATE accounts SET balance = balance-%s WHERE userId=%s",
                             (price,user[0]))
             self.mysql.connection.commit()
@@ -127,6 +128,7 @@ class Kwarta:
 
     def run(self):
         self.app.run(debug=True)
+        
 
     def setup_route(self):
         @self.app.route("/")
@@ -247,10 +249,12 @@ class Kwarta:
 
                 #amount should not be negative or equal to 0
                 if self.amountVerifier(amount) == False:
+                    flash('Please enter a valid deposit amount.', 'danger')#alert
                     return redirect(url_for("dashboard"))
 
                 #send amount cannot be more than your balance
                 if self.account[4] < float(amount):
+                    flash('Insufficient Funds.', 'danger')#alert
                     print("Insufficient Funds.")
                     return redirect(url_for('dashboard'))
 
@@ -262,6 +266,7 @@ class Kwarta:
 
                     #Prevents user from sending to self
                     if receiver1 == self.account:
+                        flash('Cannot send to self!', 'danger')
                         print("Cannot send to self")
                         return redirect(url_for("dashboard"))
 
@@ -275,11 +280,14 @@ class Kwarta:
                         #record the transaction
                         self.recordTransaction("Send", self.account[3], receiver1[3], receiver1[0], "Send Balance", amount,fee)
                         
+                        flash('Successfully sent!', 'success')#alert
                         return redirect(url_for('dashboard'))
                     else:
+                        flash('User does not exist!', 'danger')
                         print("User does not exist")
                         return redirect(url_for('dashboard'))
                 else: 
+                    flash('Incorrect password!', 'danger', )
                     print("Incorrect password")    
                 return redirect(url_for('dashboard'))
 
@@ -292,6 +300,7 @@ class Kwarta:
 
                 #disable negative and 0 amounts
                 if float(amount)<=0:
+                    flash('Please enter a valid deposit amount.', 'danger')#alert
                     print("amount cannot be less than 1")
                     return redirect(url_for("dashboard"))
 
@@ -302,6 +311,8 @@ class Kwarta:
 
                 self.recordTransaction("Recharge", name, self.account[3] , self.account[0], "Bank Recharge", amount, fee)
 
+                
+                flash('Successfully recharged!', 'success')#alert
                 return redirect(url_for("dashboard"))
             
 
@@ -315,7 +326,12 @@ class Kwarta:
 
                 fee = self.feeCalculator(amount)
 
+                if self.amountVerifier(amount) == False:
+                    flash('Please enter a valid deposit amount.', 'danger')#alert
+                    return redirect(url_for("dashboard"))
+
                 if (self.account[4] < amount+fee):
+                    flash('Insufficient Funds.', 'danger')
                     print("not enough balance")
                     return redirect(url_for('dashboard'))
 
@@ -326,7 +342,13 @@ class Kwarta:
                     cursor.close()
 
                     self.recordTransaction("Bank Transfer", self.account[3], accountName ,self.account[0], "Bank Transfer", amount, fee)
-                else: print("Password does not match")
+                    
+                    flash('Successfully sent!', 'success')#alert
+                    return redirect("/dashboard")
+
+                else:
+                    flash('Incorrect password!', 'danger', )
+                    print("Password does not match")
                 return redirect("/dashboard")
             
 
@@ -334,6 +356,8 @@ class Kwarta:
         def gameTopup_process():
             if request.method=="POST":
                 game = request.form["game"]
+                success = True 
+                
 
                 if game == "minecraft":
                     email = request.form["email"]
@@ -356,7 +380,8 @@ class Kwarta:
                         
                         print(email,price, Minecoins)
 
-                    else: print(f"Failed to withdraw {price}")
+                    else: 
+                        print(f"Failed to withdraw {price}")
 
                 
                 elif game == "genshin":
@@ -377,7 +402,8 @@ class Kwarta:
                         print(f"Successfully withdrawn {price}")
                         print(uid,server,price, package)
                         self.recordTransaction("Game Topup", self.account[3], "Genshin Impact", self.account[0], package, price, fee)
-                    else: print(f"Failed to withdraw {price}")
+                    else:
+                        print(f"Failed to withdraw {price}")
 
 
                 elif game == "league of legends":
@@ -394,7 +420,8 @@ class Kwarta:
                         self.recordTransaction("Game Topup", self.account[3], "League of Legends", self.account[0], f"{rp} RP", price, fee)
                         
                         print(riotId,price)
-                    else: print(f"Failed to withdraw {total}")
+                    else:
+                        print(f"Failed to withdraw {total}")
                     
                                
                 elif game == "CODM":
@@ -411,7 +438,8 @@ class Kwarta:
                         self.recordTransaction("Game Topup", self.account[3], "Call of Duty Mobile", self.account[0], f"{float(price)} Garena Shellls", price, fee)
                         print(playerID,price)
 
-                    else: print(f"Failed to withdraw {total}")
+                    else:
+                        print(f"Failed to withdraw {total}")
                     
              
                 elif game == "valorant":
@@ -426,14 +454,16 @@ class Kwarta:
 
                     if(self.withdraw(total, self.account)):
                         print(f"Successfully withdrawn {total}")
-                        self.recordTransaction("Game Topup", self.account[3], "Minecraft", self.account[0], f"{currency} VP", price, fee)
+                        self.recordTransaction("Game Topup", self.account[3], "Valorant", self.account[0], f"{currency} VP", price, fee)
                         
                         print(playerID,price,currency)
 
                     else: print(f"Failed to withdraw {total}")
-                    
-                    
+
+                
                 return redirect(url_for("dashboard"))
+                
+                
         
         @self.app.route("/load_process", methods=["POST", "GET"])
         def load_process():

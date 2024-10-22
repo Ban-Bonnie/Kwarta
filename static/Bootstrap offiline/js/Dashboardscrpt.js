@@ -47,3 +47,10 @@ window.addEventListener('click', function(event) {
         dropdown.style.display = 'none';
     }
 });
+
+$(".burger").click(function(){  
+    $.bootstrapGrowl('Successfully Sent',{  
+        type: 'success',  
+        delay: 2000,  
+    });  
+});

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="Admin.css">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <title>Kwarta - Top Up</title>
+</head>
+
+<body>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <div class="bg-white" id="sidebar-wrapper">
+            <div class="sidebar-heading text-center py-4 primary-text fs-4 fw-bold text-uppercase border-bottom">
+                <i class="fas fa-coins me-2"></i>Kwarta
+            </div>
+            <div class="list-group list-group-flush my-3">
+                <a href="#" class="list-group-item list-group-item-action bg-transparent second-text fw-bold">
+                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+                <a href="#" class="list-group-item list-group-item-action bg-transparent second-text active">
+                    <i class="fas fa-wallet me-2"></i>TopUp</a>
+                <a href="#" class="list-group-item list-group-item-action bg-transparent second-text fw-bold">
+                    <i class="fas fa-bolt me-2"></i>Load</a>
+                <a href="#" class="list-group-item list-group-item-action bg-transparent second-text fw-bold">
+                    <i class="fas fa-gift me-2"></i>Donation</a>
+                <a href="#" class="list-group-item list-group-item-action bg-transparent second-text fw-bold">
+                    <i class="fas fa-file-invoice me-2"></i>Bills</a>
+                <a href="#" class="list-group-item list-group-item-action bg-transparent text-danger fw-bold">
+                    <i class="fas fa-power-off me-2"></i>Logout</a>
+            </div>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-light bg-transparent py-4 px-4">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-align-left primary-text fs-4 me-3" id="menu-toggle"></i>
+                    <h2 class="fs-2 m-0">Top Up Dashboard</h2>
+                </div>
+            </nav>
+
+            <div class="container-fluid px-4">
+                <div class="row g-3 my-2 justify-content-center">
+                    <div class="col-md-4">
+                        <div
+                            class="p-3 bg-white shadow-sm d-flex flex-column justify-content-center align-items-center rounded">
+                            <div class="text-center">
+                                <h3 class="fs-2">₱15,000</h3>
+                                <p class="fs-5">Total Top Up Revenue</p>
+                            </div>
+                            <i class="fas fa-wallet fs-1 primary-text border rounded-full secondary-bg p-3"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div
+                            class="p-3 bg-white shadow-sm d-flex flex-column justify-content-center align-items-center rounded">
+                            <div class="text-center">
+                                <h3 class="fs-2">2500</h3>
+                                <p class="fs-5">Top Up Transactions</p>
+                            </div>
+                            <i class="fas fa-exchange-alt fs-1 primary-text border rounded-full secondary-bg p-3"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row my-5">
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                Top-Up Preferences
+                            </div>
+                            <div class="card-body">
+                                <div id="topUpPreferencesChart" class="chart-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                Top-Up Revenue
+                            </div>
+                            <div class="card-body">
+                                <div id="feeRevenueChart" class="chart-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /#page-content-wrapper -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Load Google Charts
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawCharts);
+
+        function drawCharts() {
+            // Top-Up Preferences Chart
+            var topUpPreferencesData = google.visualization.arrayToDataTable([
+                ['Game', 'Percentage'],
+                ['Minecraft', 30],
+                ['Genshin Impact', 25],
+                ['Valorant', 20],
+                ['Call of Duty Mobile', 15],
+                ['League of Legends', 10]
+            ]);
+
+            var topUpPreferencesOptions = {
+                title: 'Top-Up Preferences',
+                pieHole: 0.1,
+            };
+
+            var topUpPreferencesChart = new google.visualization.PieChart(document.getElementById('topUpPreferencesChart'));
+            topUpPreferencesChart.draw(topUpPreferencesData, topUpPreferencesOptions);
+
+            // Fee Revenue Chart
+            var feeRevenueData = google.visualization.arrayToDataTable([
+                ['Month', 'Revenue'],
+                ['Jan', 1200], ['Feb', 1500], ['Mar', 1800],
+                ['Apr', 2100], ['May', 2400], ['Jun', 2700],
+                ['Jul', 3000], ['Aug', 3300], ['Sep', 3600],
+                ['Oct', 3900], ['Nov', 4200], ['Dec', 4500]
+            ]);
+
+            // Apply number format for peso
+            var formatter = new google.visualization.NumberFormat({
+                prefix: '₱',  // Adds the peso sign before each value
+                fractionDigits: 2 // Keeps two decimal places (optional)
+            });
+            formatter.format(feeRevenueData, 1); // Apply formatting to the second column (index 1)
+
+            var feeRevenueOptions = {
+                title: 'Top-Up Revenue',
+                curveType: 'function',
+                legend: { position: 'bottom' },
+                vAxis: { title: 'Revenue (₱)' },
+                hAxis: { title: 'Month' },
+                colors: ['#007bff'],
+                pointSize: 5
+
+            };
+
+            var feeRevenueChart = new google.visualization.LineChart(document.getElementById('feeRevenueChart'));
+            feeRevenueChart.draw(feeRevenueData, feeRevenueOptions);
+        }
+
+        // Toggle Sidebar
+        document.getElementById("menu-toggle").addEventListener("click", function (e) {
+            e.preventDefault();
+            document.getElementById("wrapper").classList.toggle("toggled");
+        });
+
+        // Redraw charts on window resize
+        window.addEventListener('resize', drawCharts);
+    </script>
+</body>
+
+</html>

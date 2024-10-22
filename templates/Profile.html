@@ -83,7 +83,8 @@
                                 <div class="mb-3 mt-4">
                                     <label for="newPhoneNumber" class="form-label">New Phone Number</label>
                                     <input name="new_phone_number" autocomplete="off" type="text" class="form-control"
-                                        id="newPhoneNumber" placeholder="Enter your new phone number" required>
+                                        id="newPhoneNumber" placeholder="Enter your new phone number" minlength="11" maxlength="11" pattern="[0-9]{11}" required
+                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                 </div>
                                 <div class="mb-3">
                                     <label for="password" class="form-label">Password</label>

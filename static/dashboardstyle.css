@@ -1,3 +1,6 @@
+.modal input::placeholder {
+  color: #999; /* Ensure placeholder is visible inside the modal */
+}
 :root {
   --main-bg-color: #009d63;
   --main-text-color: #009d63;
@@ -427,3 +430,63 @@ input[type=number]::-webkit-inner-spin-button {
   display: none; /* Class to hide elements */
   
 }
+
+/*alert*/
+.toast-container {
+  max-width: 400px; /* Limit the width of the toast */
+  width: 100%; /* Ensure it can stretch to the container */
+}
+
+.toast {
+  border-radius: 10px;
+  padding: 15px;
+  background-color: #333; /* Dark background for contrast */
+  color: #ffffff; /* White text for readability */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+  transition: transform 0.2s ease; /* Smooth scale transition on hover */
+}
+
+.toast:hover {
+  transform: scale(1.02); /* Slightly enlarges on hover */
+}
+
+.toast-header {
+  font-weight: bold;
+  font-size: 1.1em; /* Slightly larger font size */
+  margin-bottom: 5px; /* Space below header */
+  border-bottom: 1px solid #444; /* Underline for separation */
+  padding-bottom: 5px; /* Padding for better spacing */
+}
+
+.amount-details {
+  margin-top: 10px;
+  font-size: 0.9em; /* Slightly larger font size */
+}
+
+.sent-to {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #ffcc00; /* Bright color for emphasis */
+}
+
+.amount-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  border-bottom: 1px solid #444; /* Bottom border for separation */
+}
+
+.amount-row.fee {
+  color: #ffcc00; /* Different color for fee */
+}
+
+.ref-no {
+  margin-top: 15px;
+  font-size: 0.85em;
+  color: #b0b0b0; /* Lighter color for reference number */
+  text-align: right; /* Aligns text to the right */
+}
+
