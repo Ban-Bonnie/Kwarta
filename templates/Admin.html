@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='Admin.css') }}" />
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <title>Kwarta</title>
+
+</head>
+
+<body>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <div class="bg-white" id="sidebar-wrapper">
+            <div class="sidebar-heading text-center py-4 primary-text fs-4 fw-bold text-uppercase border-bottom">
+                <i class="fas fa-coins me-2"></i>Kwarta
+            </div>
+            <div class="list-group list-group-flush my-3">
+                <a href="{{url_for('admin')}}" class="list-group-item list-group-item-action bg-transparent second-text active">
+                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+                <a href="{{url_for('adminTopup')}}" class="list-group-item list-group-item-action bg-transparent second-text fw-bold">
+                    <i class="fas fa-wallet me-2"></i>TopUp</a>
+                <a href="{{url_for('adminLoad')}}" class="list-group-item list-group-item-action bg-transparent second-text fw-bold">
+                    <i class="fas fa-bolt me-2"></i>Load</a>
+                <a href="{{url_for('adminDonations')}}" class="list-group-item list-group-item-action bg-transparent second-text fw-bold">
+                    <i class="fas fa-gift me-2"></i>Donation</a>
+                <a href="{{url_for('adminBills')}}" class="list-group-item list-group-item-action bg-transparent second-text fw-bold">
+                    <i class="fas fa-file-invoice me-2"></i>Bills</a>
+                <a href="{{url_for('home')}}" class="list-group-item list-group-item-action bg-transparent text-danger fw-bold">
+                    <i class="fas fa-power-off me-2"></i>Logout</a>
+            </div>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <nav class="navbar navbar-expand-lg navbar-light bg-transparent py-4 px-4">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-align-left primary-text fs-4 me-3" id="menu-toggle"></i>
+                    <h2 class="fs-2 m-0">Dashboard</h2>
+                </div>
+            </nav>
+
+            <div class="container-fluid px-4">
+                <div class="row g-3 my-2 justify-content-center">
+                    <div class="col-md-3">
+                        <div
+                            class="p-3 bg-white shadow-sm d-flex flex-column justify-content-center align-items-center rounded">
+                            <div class="text-center">
+                                <h3 class="fs-2">₱{{adminData[0]}}</h3>
+                                <p class="fs-5">Total Revenue</p>
+                            </div>
+                            <i class="fas fa-wallet fs-1 primary-text border rounded-full secondary-bg p-3"></i>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div
+                            class="p-3 bg-white shadow-sm d-flex flex-column justify-content-center align-items-center rounded">
+                            <div class="text-center">
+                                <h3 class="fs-2">₱{{adminData[1]}}</h3>
+                                <p class="fs-5">Donations</p>
+                            </div>
+                            <i
+                                class="fas fa-hand-holding-heart fs-1 primary-text border rounded-full secondary-bg p-3"></i>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div
+                            class="p-3 bg-white shadow-sm d-flex flex-column justify-content-center align-items-center rounded">
+                            <div class="text-center">
+                                <h3 class="fs-2">{{adminData[2]}}</h3>
+                                <p class="fs-5">No. of Users</p>
+                            </div>
+                            <i class="fas fa-users fs-1 primary-text border rounded-full secondary-bg p-3"></i>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row my-5">
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                User Active Status
+                            </div>
+                            <div class="card-body">
+                                <div id="userActiveStatusChart" class="chart-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                Top Users
+                            </div>
+                            <div class="card-body">
+                                <div id="topUsersChart" class="chart-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-5">
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                Transaction Volume Over Time
+                            </div>
+                            <div class="card-body">
+                                <div id="transactionVolumeChart" class="chart-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                Revenue Growth
+                            </div>
+                            <div class="card-body">
+                                <div id="revenueGrowthChart" class="chart-container"></div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+                <div class="row my-5">
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                User Growth
+                            </div>
+                            <div class="card-body">
+                                <div id="userGrowthChart" class="chart-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                Monthly Transaction Amount
+                            </div>
+                            <div class="card-body">
+                                <div id="monthlyTransactionChart" class="chart-container"></div>
+                            </div>
+                        </div>
+                    </div>                 
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /#page-content-wrapper -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        var el = document.getElementById("wrapper");
+        var toggleButton = document.getElementById("menu-toggle");
+
+        toggleButton.onclick = function () {
+            el.classList.toggle("toggled");
+        };
+
+        // Load Google Charts
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawCharts);
+
+        function drawCharts() {
+            // Get the previous month name
+            var monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+            var currentMonth = new Date().getMonth();
+            var previousMonth = (currentMonth === 0) ? 11 : currentMonth - 1;
+            var monthTitle = monthNames[previousMonth];
+
+            // Revenue Growth
+            var revenueData = google.visualization.arrayToDataTable([
+                ['Month', 'Volume'],
+                ['Jan', {{revenueGrowth[0]}}], ['Feb', {{revenueGrowth[1]}}], ['Mar', {{revenueGrowth[2]}}], 
+                ['Apr', {{revenueGrowth[3]}}], ['May', {{revenueGrowth[4]}}], ['Jun', {{revenueGrowth[5]}}], 
+                ['Jul', {{revenueGrowth[6]}}], ['Aug', {{revenueGrowth[7]}}], ['Sep', {{revenueGrowth[8]}}], 
+                ['Oct', {{revenueGrowth[9]}}], ['Nov', {{revenueGrowth[10]}}], ['Dec', {{revenueGrowth[11]}}]
+            ]);
+
+            var revenueOptions = {
+                title: 'Revenue Growth',
+                curveType: 'function',
+                legend: { position: 'bottom' }
+            };
+
+            var transactionChart = new google.visualization.LineChart(document.getElementById('revenueGrowthChart'));
+            transactionChart.draw(revenueData, revenueOptions);
+
+            // Transaction Volume Over Time
+            var transactionData = google.visualization.arrayToDataTable([
+                ['Month', 'Volume'],
+                ['Jan', {{transactionVolume[0]}}], ['Feb', {{transactionVolume[1]}}], ['Mar', {{transactionVolume[2]}}], 
+                ['Apr', {{transactionVolume[3]}}], ['May', {{transactionVolume[4]}}], ['Jun', {{transactionVolume[5]}}], 
+                ['Jul', {{transactionVolume[6]}}], ['Aug', {{transactionVolume[7]}}], ['Sep', {{transactionVolume[8]}}], 
+                ['Oct', {{transactionVolume[9]}}], ['Nov', {{transactionVolume[10]}}], ['Dec', {{transactionVolume[11]}}]
+            ]);
+
+            var transactionOptions = {
+                title: 'Transaction Volume Over Time',
+                curveType: 'function',
+                legend: { position: 'bottom' }
+            };
+
+            var transactionChart = new google.visualization.LineChart(document.getElementById('transactionVolumeChart'));
+            transactionChart.draw(transactionData, transactionOptions);
+
+            // Top Users
+            var topUsersData = google.visualization.arrayToDataTable([
+            ['User', 'Transaction Volume'],
+                ['{{topUsers[0][0]}}', {{topUsers[0][1]}}], 
+                ['{{topUsers[1][0]}}', {{topUsers[1][1]}}], 
+                ['{{topUsers[2][0]}}', {{topUsers[2][1]}}],
+                ['{{topUsers[3][0]}}', {{topUsers[3][1]}}], 
+                ['{{topUsers[4][0]}}', {{topUsers[4][1]}}]
+            ]);
+
+            var topUsersOptions = {
+                title: 'Top Users',
+                legend: { position: 'none' }
+            };
+
+            var topUsersChart = new google.visualization.BarChart(document.getElementById('topUsersChart'));
+            topUsersChart.draw(topUsersData, topUsersOptions);
+
+            // User Growth
+            var userGrowthData = google.visualization.arrayToDataTable([
+                ['Month', 'Users'],
+                ['Jan', {{userGrowth[0]}}], ['Feb', {{userGrowth[1]}}], ['Mar', {{userGrowth[2]}}], 
+                ['Apr', {{userGrowth[3]}}], ['May', {{userGrowth[4]}}], ['Jun', {{userGrowth[5]}}], 
+                ['Jul', {{userGrowth[6]}}], ['Aug', {{userGrowth[7]}}], ['Sep', {{userGrowth[8]}}], 
+                ['Oct', {{userGrowth[9]}}], ['Nov', {{userGrowth[10]}}], ['Dec', {{userGrowth[11]}}]
+            ]);
+
+            var userGrowthOptions = {
+                title: 'User Growth',
+                curveType: 'function',
+                legend: { position: 'bottom' }
+            };
+
+            var userGrowthChart = new google.visualization.LineChart(document.getElementById('userGrowthChart'));
+            userGrowthChart.draw(userGrowthData, userGrowthOptions);
+
+            // Monthly Transaction Amount
+            var monthlyTransactionData = google.visualization.arrayToDataTable([
+                ['Month', 'Amount'],
+                ['Jan', {{transactionAmount[0]}}], ['Feb', {{transactionAmount[1]}}], ['Mar', {{transactionAmount[2]}}], 
+                ['Apr', {{transactionAmount[3]}}], ['May', {{transactionAmount[4]}}], ['Jun', {{transactionAmount[5]}}], 
+                ['Jul', {{transactionAmount[6]}}], ['Aug', {{transactionAmount[7]}}], ['Sep', {{transactionAmount[8]}}], 
+                ['Oct', {{transactionAmount[9]}}], ['Nov', {{transactionAmount[10]}}], ['Dec', {{transactionAmount[11]}}]
+            ]);
+
+            var monthlyTransactionOptions = {
+                title: 'Monthly Transaction Amount',
+                legend: { position: 'none' }
+            };
+
+            var monthlyTransactionChart = new google.visualization.ColumnChart(document.getElementById('monthlyTransactionChart'));
+            monthlyTransactionChart.draw(monthlyTransactionData, monthlyTransactionOptions);
+
+            // User Active Status for the past month (Pie Chart)
+            var activeStatusData = google.visualization.arrayToDataTable([
+                ['User Status', 'Percentage'],
+                ['Active Users', {{users[0]}}], // Replace with real data
+                ['Inactive Users', {{users[1]}}] // Replace with real data
+            ]);
+            
+            var activeStatusOptions = {
+                title: 'User Active Status for ' + monthTitle,
+                pieHole: 0.4, // Donut-style pie chart
+                colors: ['#4caf50', '#f44336'] // Customize colors
+            };
+
+            var activeStatusChart = new google.visualization.PieChart(document.getElementById('userActiveStatusChart'));
+            activeStatusChart.draw(activeStatusData, activeStatusOptions);
+        }
+
+        // Redraw charts on window resize
+        window.addEventListener('resize', drawCharts);
+    </script>
+
+</body>
+
+</html>

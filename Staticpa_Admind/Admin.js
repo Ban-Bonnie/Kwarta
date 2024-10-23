@@ -104,7 +104,7 @@ var el = document.getElementById("wrapper");
                 ['Active Users', 75], // Replace with real data
                 ['Inactive Users', 25] // Replace with real data
             ]);
-
+            
             var activeStatusOptions = {
                 title: 'User Active Status for ' + monthTitle,
                 pieHole: 0.4, // Donut-style pie chart

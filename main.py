@@ -31,6 +31,54 @@ class Kwarta:
 
         cursor.close()
 
+    def fetchMonthlyCount(self,type):
+        cursor = self.mysql.connection.cursor()
+        months = [f"{i:02}" for i in range(1, 13)]
+        count = []
+
+        if type=="admin_revenue_growth":
+            for month in months:
+                cursor.execute("SELECT SUM(fee) FROM tbl_transactions WHERE date LIKE %s;",(f'2024-{month}-%', ))
+                x = (cursor.fetchone()[0])
+                if x:
+                    count.append(x)
+                else: count.append(0)
+        
+        elif type=="admin_transaction_volume":
+            for month in months:
+                cursor.execute("SELECT COUNT(*) FROM tbl_transactions WHERE date LIKE %s AND type <> %s;",(f'2024-{month}-%','Receive' ))
+                x = (cursor.fetchone()[0])
+                if x:
+                    count.append(x)
+                else: count.append(0)
+        
+        elif type=="admin_user_growth":
+            for month in months:
+                cursor.execute("SELECT COUNT(*) FROM accounts WHERE date_joined LIKE %s;",(f'2024-{month}-%', ))
+                x = (cursor.fetchone()[0])
+                if x:
+                    count.append(x)
+                else: count.append(0)
+        
+        elif type=="admin_monthly_transaction_amount":
+            for month in months:
+                cursor.execute("SELECT SUM(total_amount) FROM tbl_transactions WHERE date LIKE %s",(f'2024-{month}-%', ))
+                x = (cursor.fetchone()[0])
+                if x:
+                    count.append(x)
+                else: count.append(0)
+        
+        
+        else:
+            for month in months:
+                cursor.execute("SELECT SUM(fee) FROM tbl_transactions WHERE type = %s AND date LIKE %s;",(type,f'2024-{month}-%', ))
+                x = (cursor.fetchone()[0])
+                if x:
+                    count.append(x)
+                else: count.append(0)
+
+        return(count)
+
     def generate_unique_id(self):
         current_date = datetime.now()
         date_str = current_date.strftime("%Y%m%d")
@@ -280,6 +328,7 @@ class Kwarta:
         cursor = self.mysql.connection.cursor()
         cursor.execute("SELECT * FROM aging_accounts")
         accountsTuple =  cursor.fetchall()
+        print(accountsTuple)
 
         for i in accountsTuple:
             tupleUserId = i[0]
@@ -288,14 +337,14 @@ class Kwarta:
 
             if tupleUserId == userid:
                 cursor.execute("UPDATE aging_accounts SET days_offline = 0 WHERE userid = %s",(userid,))
+                self.mysql.connection.commit()
 
             else:
                 try:
                     #Get Difference of Date now from last login fate
                     cursor.execute("SELECT DATEDIFF(%s, last_login_date) AS days_offline FROM aging_accounts WHERE userid = %s;",(dateNow,tupleUserId))
                     daysOffline = cursor.fetchone()
-                    print(f"user's current days offline {daysOffline}")
-
+                    
                     cursor.execute("UPDATE aging_accounts SET days_offline = %s WHERE userid = %s;",
                                     (daysOffline,tupleUserId))
                     self.mysql.connection.commit()
@@ -322,6 +371,7 @@ class Kwarta:
         
         @self.app.route("/TopUp")
         def topup():
+
             return render_template("TopUp.html")
         
         @self.app.route("/Bills")
@@ -339,7 +389,124 @@ class Kwarta:
         @self.app.route("/Profile")
         def Profile():
             return render_template("Profile.html", account=self.account, history=self.historyTuple)
+        
+        @self.app.route("/Admin")
+        def admin():
 
+            #Data for revenue, donations, total users
+            adminData = []
+            cursor = self.mysql.connection.cursor()
+            cursor.execute("SELECT * FROM admin_dashboard")
+            admin_dashboard = cursor.fetchall()
+            for i in admin_dashboard:
+                adminData.append(i[-1])
+            
+            cursor.execute("SELECT COUNT(*) FROM accounts")
+            adminData.append(cursor.fetchone()[0])
+
+            #Data for Top users
+            cursor.execute("SELECT name, total_transactions FROM accounts ORDER BY total_transactions DESC LIMIT 5;")
+            topUsers = cursor.fetchall()
+            
+            #Data for Active/Inactive users
+            userActiveStatus = []
+            cursor.execute("SELECT COUNT(*) FROM aging_accounts WHERE days_offline < 5")
+            userActiveStatus.append(cursor.fetchone()[0])
+
+            cursor.execute("SELECT COUNT(*) FROM aging_accounts WHERE days_offline > 4")
+            userActiveStatus.append(cursor.fetchone()[0])
+
+            #Data for Transaction Volume Over Time
+            transactionVolume = self.fetchMonthlyCount("admin_transaction_volume")
+            
+            #Data for revenue growth
+            revenueGrowth = self.fetchMonthlyCount("admin_revenue_growth")
+            
+            #Data for User growth
+            userGrowth = self.fetchMonthlyCount("admin_user_growth")
+
+            #Data for  monthly transaction amount
+            transactionAmount = self.fetchMonthlyCount("admin_monthly_transaction_amount")
+
+            cursor.close()
+            return render_template("/Admin.html",adminData=adminData, topUsers=topUsers,
+                                    users=userActiveStatus, transactionVolume = transactionVolume,
+                                    revenueGrowth = revenueGrowth, userGrowth=userGrowth,
+                                    transactionAmount=transactionAmount)
+        
+        @self.app.route("/AdminBills")
+        def adminBills():
+            cursor = self.mysql.connection.cursor()
+            #fetch revenue
+            cursor.execute("SELECT * FROM service_revenue WHERE name = %s",("Bills Payment",))
+            revenue = cursor.fetchone()
+            
+            #fetch game data
+            cursor.execute("SELECT * FROM transaction_count WHERE type = %s",("Bills",))
+            billsData = cursor.fetchall()
+
+            #data for revenue graph
+            monthlyRevenues = self.fetchMonthlyCount("Bills Payment")
+            cursor.close()
+
+            return render_template("/AdminBills.html",billsData = billsData, revenue=revenue, monthlyRevenue=monthlyRevenues)
+        
+        @self.app.route("/AdminDonations")
+        def adminDonations():
+            cursor = self.mysql.connection.cursor()
+            donations = []
+            cursor.execute("SELECT total_transactions FROM service_revenue WHERE name = %s",("Donate",))
+            Donors = cursor.fetchone()
+            donations.append(Donors[0])
+
+            cursor.execute("SELECT amount FROM admin_dashboard WHERE name = %s",("Donations",))
+            totalDonations = cursor.fetchone()
+            donations.append(totalDonations[0])
+            
+            cursor.execute("SELECT * FROM transaction_count WHERE type = %s",("Donate",))
+            donateData = cursor.fetchall()
+            print(donateData)
+            print(donations)
+
+
+            cursor.close()
+            return render_template("/AdminDonations.html", donations = donations,donateData = donateData )
+        
+        @self.app.route("/AdminLoad")
+        def adminLoad():
+            cursor = self.mysql.connection.cursor()
+            #fetch revenue
+            cursor.execute("SELECT * FROM service_revenue WHERE name = %s",("Load",))
+            revenue = cursor.fetchone()
+            
+            #fetch game data
+            cursor.execute("SELECT * FROM transaction_count WHERE type = %s",("load",))
+            loadData = cursor.fetchall()
+            
+            #Data for revenue graph
+            monthlyRevenues = self.fetchMonthlyCount("load")
+
+            cursor.close()
+
+            return render_template("/AdminLoad.html",revenue = revenue, loadData=loadData, monthlyRevenue=monthlyRevenues)
+        
+        @self.app.route("/AdminTopUp")
+        def adminTopup():
+            cursor = self.mysql.connection.cursor()
+            #fetch revenue
+            cursor.execute("SELECT * FROM service_revenue WHERE name = %s",("Game Topup",))
+            revenue = cursor.fetchone()
+            
+            #fetch game data
+            cursor.execute("SELECT * FROM transaction_count WHERE type = %s",("Game Topup",))
+            gameData = cursor.fetchall()
+
+            #Data for revenue graph
+            monthlyRevenues = self.fetchMonthlyCount("Game Topup")
+
+
+            cursor.close()
+            return render_template("/AdminTopUp.html", revenue=revenue,gameData=gameData,monthlyRevenue = monthlyRevenues)
 
 
 
@@ -362,7 +529,7 @@ class Kwarta:
                     isAdmin = cursor.fetchone()
 
                     if isAdmin:
-                        return("<h1>Hello Admin!!</h1>")
+                        return redirect(url_for("admin"))
 
                     cursor.execute("SELECT * FROM accounts WHERE username = %s ",(userBox,))
                     user = cursor.fetchone()
