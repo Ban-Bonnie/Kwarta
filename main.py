@@ -68,6 +68,14 @@ class Kwarta:
                     count.append(x)
                 else: count.append(0)
         
+        elif type == "donation_growth":
+            for month in months:
+                cursor.execute("SELECT SUM(total_amount) FROM tbl_transactions WHERE type=%s AND date LIKE %s",("Donate",f'2024-{month}-%' ))
+                x = (cursor.fetchone()[0])
+                if x:
+                    count.append(x)
+                else: count.append(0)
+
         
         else:
             for month in months:
@@ -178,10 +186,11 @@ class Kwarta:
                 self.recordFees(type, fee)
 
             elif type == "Recharge":
+                total_amount = fee + rawAmount
                 cursor.execute(
                     "INSERT INTO tbl_transactions (userid, txn, type, payee, merchant, purchase, amount, fee, total_amount, date) "
                     "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                    (merchantID, txn, type, sender, merchant, purchase, rawAmount, fee, rawAmount, date))
+                    (merchantID, txn, type, sender, merchant, purchase, rawAmount, fee, total_amount, date))
                 
                 self.increment_total_transaction(userId)
                 self.recordFees(type, fee)
@@ -390,6 +399,8 @@ class Kwarta:
         def Profile():
             return render_template("Profile.html", account=self.account, history=self.historyTuple)
         
+        
+        #Admin Routes
         @self.app.route("/Admin")
         def admin():
 
@@ -465,12 +476,10 @@ class Kwarta:
             
             cursor.execute("SELECT * FROM transaction_count WHERE type = %s",("Donate",))
             donateData = cursor.fetchall()
-            print(donateData)
-            print(donations)
 
-
+            donationGrowth = self.fetchMonthlyCount("donation_growth")
             cursor.close()
-            return render_template("/AdminDonations.html", donations = donations,donateData = donateData )
+            return render_template("/AdminDonations.html", donations = donations,donateData = donateData, donationGrowth=donationGrowth )
         
         @self.app.route("/AdminLoad")
         def adminLoad():

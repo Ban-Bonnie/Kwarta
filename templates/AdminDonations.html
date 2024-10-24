@@ -105,10 +105,10 @@
                         // Total Donation Revenue Chart
                         var totalDonationData = google.visualization.arrayToDataTable([
                             ['Month', 'Revenue'],
-                            ['Jan', 1200], ['Feb', 1500], ['Mar', 1800],
-                            ['Apr', 2100], ['May', 2400], ['Jun', 2700],
-                            ['Jul', 3000], ['Aug', 3300], ['Sep', 3600],
-                            ['Oct', 3900], ['Nov', 4200], ['Dec', 4500]
+                            ['Jan', {{donationGrowth[0]}}], ['Feb', {{donationGrowth[1]}}], ['Mar', {{donationGrowth[2]}}],
+                            ['Apr', {{donationGrowth[3]}}], ['May', {{donationGrowth[4]}}], ['Jun', {{donationGrowth[5]}}],
+                            ['Jul', {{donationGrowth[6]}}], ['Aug', {{donationGrowth[7]}}], ['Sep', {{donationGrowth[8]}}],
+                            ['Oct', {{donationGrowth[9]}}], ['Nov', {{donationGrowth[10]}}], ['Dec', {{donationGrowth[11]}}]
                         ]);
 
                         var totalDonationOptions = {
